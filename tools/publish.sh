@@ -33,7 +33,7 @@ EXCLUDE=(
 # The published tree: HEAD minus the excluded files, built in a scratch index (nothing checked out changes).
 export GIT_INDEX_FILE
 GIT_INDEX_FILE=$(mktemp -u)
-trap 'rm -f "$GIT_INDEX_FILE"' EXIT
+trap 'rm -f "${GIT_INDEX_FILE:-}"' EXIT
 git read-tree HEAD
 git rm --cached -q --ignore-unmatch -- "${EXCLUDE[@]}"
 tree=$(git write-tree)
