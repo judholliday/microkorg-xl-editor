@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>microKORG XL</title>
+  <style>
+    :root { --bg: #141416; color-scheme: dark; }
+    @media (prefers-color-scheme: light) { :root { --bg: #ecebe7; color-scheme: light; } }
+    html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+    iframe { display: block; width: 100%; height: 100%; border: 0; }
+    iframe[hidden] { display: none; }
+  </style>
+</head>
+<body>
+  <!--
+    Hosts the Sound Editor and the Sequencer together and shows one at a time. Both stay loaded,
+    so the sequencer keeps playing (and the editor keeps following the synth) while you switch.
+    The pages ask to switch with postMessage({ type: 'switch-view', view }).
+  -->
+  <iframe id="editor" title="Sound Editor" allow="midi"></iframe>
+  <iframe id="sequencer" title="Sequencer" allow="midi" hidden></iframe>
+  <script>
+    const frames = { editor: document.getElementById('editor'), sequencer: document.getElementById('sequencer') };
+    // A fresh address each time, so a browser never restores an out-of-date copy of a page.
+    const fresh = `${location.search ? `${location.search}&` : '?'}v=${Date.now()}`;
+    frames.editor.src = `editor.html${fresh}`;
+    frames.sequencer.src = `sequencer.html${fresh}`;
+    let current = 'editor';
+
+    function show(view) {
+      if (!frames[view]) view = 'editor';
+      current = view;
+      for (const [name, frame] of Object.entries(frames)) frame.hidden = name !== view;
+      history.replaceState(null, '', `${location.search}#${view}`);
+      frames[view].contentWindow.focus();
+      syncTitle();
+    }
+
+    // The tab shows the visible page's title (e.g. the song name and its unsaved mark).
+    function syncTitle() {
+      try { document.title = frames[current].contentDocument.title || 'microKORG XL'; } catch { /* still loading */ }
+    }
+    setInterval(syncTitle, 1000);
+
+    addEventListener('message', e => {
+      if (e.origin === location.origin && e.data?.type === 'switch-view') show(e.data.view);
+    });
+    addEventListener('hashchange', () => show(location.hash.slice(1)));
+    for (const frame of Object.values(frames)) frame.addEventListener('load', syncTitle);
+    show(location.hash.slice(1));
+  </script>
+</body>
+</html>

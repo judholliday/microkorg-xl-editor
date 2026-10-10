@@ -1,0 +1,2996 @@
+[
+ {
+  "page": 0,
+  "program": "1-1",
+  "name": "Brass",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 0.5,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 2.5,
+   "saw": true,
+   "pulse": false,
+   "pw": 2.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 3.75,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": false,
+   "pw": 2.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 6.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 6.5,
+  "unison": false,
+  "mixer": {
+   "oscA": 9.75,
+   "oscB": 9.75,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 0.5,
+   "resonance": 0.5,
+   "envAmount": 7.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 4.5,
+   "decay": 5.75,
+   "sustain": 5.0,
+   "release": 4.5
+  },
+  "ampEnv": {
+   "attack": 4.0,
+   "decay": 4.0,
+   "sustain": 6.0,
+   "release": 5.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 1 octave (basic pitch)",
+   "pitchB": "up 2 octaves",
+   "summary": "A basic polyphonic brass patch on Osc A's sawtooth, opened up by a strong filter envelope. Osc B has no waveform selected, but the mixer is set so it can be added for an octave doubling (sawtooth to match, triangle for a softer double). Pushing the wheel up slightly (1/8 to 1/4) gives about 5 Hz vibrato; glide is set for Unison lead use. Pulse width is 2 on both oscillators so switching to pulse still sounds. Suggestions: route the wheel to the filter for tremolo, vary the envelopes for different brass, or use Osc B in LO FREQ mode as a poly-mod source at about 1.5."
+  },
+  "xl": {
+   "aSemi": 12,
+   "bSemi": 24
+  },
+  "xlName": "BRASS"
+ },
+ {
+  "page": 1,
+  "program": "1-2",
+  "name": "Low Strings",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 0.25,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 2.25,
+   "saw": false,
+   "pulse": true,
+   "pw": 3.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 2.25,
+   "fine": 1.5,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 3.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 6.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": true,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 4.0,
+   "oscB": 4.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 5.5,
+   "resonance": 0.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 0.0,
+   "release": 0.0
+  },
+  "ampEnv": {
+   "attack": 5.75,
+   "decay": 4.0,
+   "sustain": 9.5,
+   "release": 5.5
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 1 octave",
+   "pitchB": "up 1 octave (detuned against A)",
+   "summary": "A low string-section sound from two pulse-wave oscillators, with Osc B detuned. The mod wheel must be pushed up about 1/4 to 1/3: it applies LFO pulse-width modulation to both oscillators, which with the detuning gives the ensemble movement; use more wheel in the upper register, less in the lower. Best in the bottom three octaves; lower the cutoff for the top two. The filter envelope is unused; the notes suggest adding one similar to the amp envelope and adjusting cutoff and envelope amount, and playing string-like lines rather than piano phrasing."
+  },
+  "xl": {
+   "aSemi": 12,
+   "bSemi": 12
+  },
+  "xlName": "LOSTRNGS"
+ },
+ {
+  "page": 2,
+  "program": "1-3",
+  "name": "Muted Clav.",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 2.25,
+   "saw": false,
+   "pulse": true,
+   "pw": 1.5,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 2.25,
+   "fine": 0.25,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 1.5,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": true
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 9.5,
+   "oscB": 9.5,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 5.5,
+   "resonance": 3.0,
+   "envAmount": 4.5,
+   "keyboard": false
+  },
+  "filterEnv": {
+   "attack": 0.25,
+   "decay": 6.0,
+   "sustain": 6.0,
+   "release": 6.5
+  },
+  "ampEnv": {
+   "attack": 0.25,
+   "decay": 0.25,
+   "sustain": 0.25,
+   "release": 6.5
+  },
+  "releaseSwitch": false,
+  "notes": {
+   "pitchA": "up 1 octave",
+   "pitchB": "up 1 octave",
+   "summary": "A short, muted clavinet-like sound from two narrow pulse waves (pulse width 1.5 on both, per the notes). Release is programmed off; switching it on lets notes fade slowly after release, and Unison turns it into a thick bass. Pushing the mod wheel up slightly (1/8 to 1/4) adds LFO tremolo via the filter. Suggested tweaks: narrower or wider pulse width, add filter keyboard tracking or more envelope amount for brightness, and detune Osc B with Fine at 1 or 1.5 for thickness."
+  },
+  "xl": {
+   "aSemi": 12,
+   "bSemi": 12
+  },
+  "xlName": "MUTE CLV"
+ },
+ {
+  "page": 3,
+  "program": "1-4",
+  "name": "Percussive Electric Piano",
+  "polyMod": {
+   "filtEnv": 5.0,
+   "oscB": 9.75,
+   "freqA": true,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.0,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": true
+  },
+  "oscB": {
+   "freq": 4.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": true,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 6.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": false,
+   "pwB": true,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 9.5,
+   "oscB": 9.5,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 2.5,
+   "resonance": 6.0,
+   "envAmount": 3.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 7.0,
+   "sustain": 3.0,
+   "release": 7.0
+  },
+  "ampEnv": {
+   "attack": 2.75,
+   "decay": 7.5,
+   "sustain": 0.0,
+   "release": 6.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 1 octave + a perfect 5th",
+   "pitchB": "up 2 octaves (basic pitch)",
+   "summary": "A struck electric piano (reed/tine style) where an octave overtone appears at the start of each note and fades as it decays. This comes from Poly-Mod with the filter envelope modulating Osc A's frequency while Osc A is synced to Osc B; with sync off, Osc B's poly-mod gives a clangorous descending tone instead. For a sustain-pedal effect, switch Release off and use the footswitch. Pushing the mod wheel up about half adds a rotating-speaker-like animation (LFO to PW B; try Freq A or PW A too), and longer release times strengthen it."
+  },
+  "xl": {
+   "aSemi": 19,
+   "bSemi": 24
+  },
+  "xlName": "PERC EP"
+ },
+ {
+  "page": 4,
+  "program": "1-5",
+  "name": "Flutes",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 2.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": true
+  },
+  "oscA": {
+   "freq": 6.0,
+   "saw": true,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 5.5,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": true,
+   "keyboard": false
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": false,
+   "square": true
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 9.5,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 2.5,
+   "resonance": 0.0,
+   "envAmount": 4.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 5.0,
+   "decay": 7.0,
+   "sustain": 7.0,
+   "release": 5.0
+  },
+  "ampEnv": {
+   "attack": 5.0,
+   "decay": 6.0,
+   "sustain": 8.0,
+   "release": 5.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 3 octaves",
+   "pitchB": "LF mode (low-frequency modulation source)",
+   "summary": "A flute sound on Osc A's sawtooth, with Osc B in low-frequency mode as a poly-mod source on the filter for a breath-like tremolo. The mod wheel adds a trill (square LFO to Osc A frequency) whose interval grows as the wheel goes up. Pulse width is 5 on both oscillators so Osc A can be switched to pulse for a hollower, wooden-flute tone and Osc B's pulse can be used as a mod source. Adjust cutoff and envelope amount for brightness."
+  },
+  "xl": {
+   "aSemi": 36
+  },
+  "xlName": "FLUTES"
+ },
+ {
+  "page": 5,
+  "program": "1-6",
+  "name": "Harpsichord",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 1.5,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 6.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 8.75,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 6.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": true,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 6.0,
+   "oscB": 9.75,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 10.0,
+   "resonance": 5.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 0.0,
+   "release": 0.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 7.0,
+   "sustain": 0.0,
+   "release": 4.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "up 3 octaves",
+   "summary": "A bright, nasal harpsichord from narrow pulse waves an octave apart (like two stops). The notes say the cutoff is fully open and resonance is at 5 for the nasal character; the amp envelope is a plucked shape with release at 4 so key-up does not click. Pushing the mod wheel up about half (LFO to both pulse widths) gives a repeating effect. Suggested tweaks: wider pulse width for fullness, less resonance, rebalance the mixer, or add a filter envelope similar to the amp envelope."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 36
+  },
+  "xlName": "HARPSCRD"
+ },
+ {
+  "page": 6,
+  "program": "1-7",
+  "name": "Sync I",
+  "polyMod": {
+   "filtEnv": 6.0,
+   "oscB": 0.0,
+   "freqA": true,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 2.75,
+   "saw": true,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": true
+  },
+  "oscB": {
+   "freq": 2.25,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 6.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 5.0,
+   "oscB": 5.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 5.5,
+   "resonance": 2.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 4.0,
+   "decay": 6.0,
+   "sustain": 0.0,
+   "release": 7.0
+  },
+  "ampEnv": {
+   "attack": 0.25,
+   "decay": 0.25,
+   "sustain": 9.5,
+   "release": 7.0
+  },
+  "releaseSwitch": false,
+  "notes": {
+   "pitchA": "up 1 octave + a minor 3rd",
+   "pitchB": "up 1 octave (basic pitch)",
+   "summary": "A sync lead/poly sound: Osc A (sawtooth) is synced to Osc B and swept by the filter envelope through Poly-Mod, giving animation at the start of each note. Filter envelope amount is 0 on purpose; the filter envelope is only a poly-mod source. Pushing the wheel up slightly (1/8 to 1/4) gives vibrato; glide works when Unison is on; Release is off and can be switched on for a slow fade. Pulse width is 5 on both oscillators and Osc B's mixer level is 5 so B's waveform can be added; changing Osc A's pitch changes the amount of attack animation."
+  },
+  "xl": {
+   "aSemi": 15,
+   "bSemi": 12
+  },
+  "xlName": "SYNC I"
+ },
+ {
+  "page": 7,
+  "program": "1-8",
+  "name": "Percussive Organ",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 0.5,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 7.0,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 2.0,
+   "fine": 0.25,
+   "saw": false,
+   "tri": true,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.25,
+  "unison": false,
+  "mixer": {
+   "oscA": 4.0,
+   "oscB": 7.0,
+   "noise": 0.25
+  },
+  "filter": {
+   "cutoff": 3.0,
+   "resonance": 0.25,
+   "envAmount": 4.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.25,
+   "decay": 6.0,
+   "sustain": 2.5,
+   "release": 4.0
+  },
+  "ampEnv": {
+   "attack": 0.25,
+   "decay": 0.25,
+   "sustain": 9.5,
+   "release": 4.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 3 octaves + a perfect 5th (must be a square wave)",
+   "pitchB": "up 1 octave (basic pitch)",
+   "summary": "An organ with a percussive attack: Osc B's triangle gives the fundamental and Osc A, a square wave pitched an octave and a fifth higher, adds upper harmonics, while a decaying filter envelope supplies the percussion. Osc A's pulse width must be a true square (about 5; listen for the 2nd harmonic dropping out). Pushing the wheel up slightly (1/8 to 1/4) gives vibrato. Adjust envelope amount for more or less percussion and cutoff for overall brightness."
+  },
+  "xl": {
+   "aSemi": 43,
+   "bSemi": 12
+  },
+  "xlName": "PERC ORG"
+ },
+ {
+  "page": 8,
+  "program": "2-1",
+  "name": "Unison Glide With Resonance",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 0.5,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": true,
+   "pulse": false,
+   "pw": 3.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 3.0,
+   "fine": 0.25,
+   "saw": true,
+   "tri": false,
+   "pulse": false,
+   "pw": 3.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 6.0,
+  "unison": true,
+  "mixer": {
+   "oscA": 5.0,
+   "oscB": 5.0,
+   "noise": 0.25
+  },
+  "filter": {
+   "cutoff": 2.0,
+   "resonance": 6.25,
+   "envAmount": 9.5,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.25,
+   "decay": 9.5,
+   "sustain": 9.5,
+   "release": 7.5
+  },
+  "ampEnv": {
+   "attack": 0.25,
+   "decay": 5.0,
+   "sustain": 9.5,
+   "release": 8.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "up 1 octave",
+   "summary": "A monophonic unison lead with glide and a resonant filter swept open by the filter envelope, using two sawtooth oscillators an octave apart. Pushing the wheel up slightly (1/8 to 1/4) gives vibrato on both oscillators. Pulse width is 3 on both oscillators so waveforms can be switched to pulse."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 12
+  },
+  "xlName": "UNI GLID"
+ },
+ {
+  "page": 9,
+  "program": "2-2",
+  "name": "Harmonium",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 0.25,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.25,
+   "fine": 2.0,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 6.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": true,
+   "filter": false
+  },
+  "glide": 0.25,
+  "unison": false,
+  "mixer": {
+   "oscA": 3.0,
+   "oscB": 3.0,
+   "noise": 0.25
+  },
+  "filter": {
+   "cutoff": 6.5,
+   "resonance": 0.25,
+   "envAmount": 0.25,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.25,
+   "decay": 0.25,
+   "sustain": 0.25,
+   "release": 0.25
+  },
+  "ampEnv": {
+   "attack": 5.5,
+   "decay": 6.0,
+   "sustain": 8.0,
+   "release": 5.5
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves (basic pitch)",
+   "pitchB": "up 2 octaves (detuned against A)",
+   "summary": "A reedy harmonium from two square waves at the same pitch with Osc B detuned, a fixed filter and a gently swelling amp envelope. Pushing the mod wheel up about a third adds LFO pulse-width modulation on both oscillators for a chorus-like animation. Turning Release off gives a French accordion effect."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 24
+  },
+  "xlName": "HARMONUM"
+ },
+ {
+  "page": 10,
+  "program": "2-3",
+  "name": "Organ With Resonance",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 0.25,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 3.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.5,
+   "fine": 0.25,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 3.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 6.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 6.0,
+   "oscB": 6.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 3.5,
+   "resonance": 7.0,
+   "envAmount": 3.5,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.25,
+   "sustain": 5.0,
+   "release": 4.0
+  },
+  "ampEnv": {
+   "attack": 0.25,
+   "decay": 0.25,
+   "sustain": 7.0,
+   "release": 2.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "up 2 octaves",
+   "summary": "A resonant organ tone with a rotating-speaker style vibrato on the mod wheel (LFO to FREQ B); push the wheel only a little (about 1/8 to 1/4) to bring it in. Glide is preset so that switching on UNISON gives a gliding lead line. The notes suggest detuning Osc B with FINE (about 1.5) for a thicker sound, routing the wheel to PW A (or PW A and PW B) instead of FREQ B for a different movement, and changing filter envelope DECAY and SUSTAIN to vary the percussion."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 24
+  },
+  "xlName": "ORG RESO"
+ },
+ {
+  "page": 11,
+  "program": "2-4",
+  "name": "Toy Piano",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 0.25,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 6.0,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 6.0,
+   "fine": 2.5,
+   "saw": false,
+   "tri": true,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 5.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.25,
+  "unison": false,
+  "mixer": {
+   "oscA": 5.0,
+   "oscB": 9.75,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 2.0,
+   "resonance": 5.0,
+   "envAmount": 5.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 6.0,
+   "sustain": 7.0,
+   "release": 7.5
+  },
+  "ampEnv": {
+   "attack": 2.0,
+   "decay": 6.0,
+   "sustain": 0.25,
+   "release": 6.5
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 3 octaves",
+   "pitchB": "up 3 octaves",
+   "summary": "A high, slightly out-of-tune toy piano. Osc B is detuned a little (FINE) on purpose for the toy-piano wobble. Osc B's pulse width is set to 5 so its waveform can be switched freely. The mod wheel gives an animation effect (LFO to PW A); raise it about 1/4 to 1/3. Play short, detached notes rather than holding keys."
+  },
+  "xl": {
+   "aSemi": 36,
+   "bSemi": 36
+  },
+  "xlName": "TOY PNO"
+ },
+ {
+  "page": 12,
+  "program": "2-5",
+  "name": "Trumpet/Flute",
+  "polyMod": {
+   "filtEnv": 2.25,
+   "oscB": 2.25,
+   "freqA": false,
+   "pwA": true,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": true,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 5.5,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": true,
+   "keyboard": false
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 6.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 9.75,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 1.5,
+   "resonance": 0.0,
+   "envAmount": 4.5,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 5.0,
+   "decay": 7.0,
+   "sustain": 6.0,
+   "release": 5.0
+  },
+  "ampEnv": {
+   "attack": 5.0,
+   "decay": 5.0,
+   "sustain": 9.5,
+   "release": 5.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "LF mode (used as a modulator, not heard)",
+   "summary": "A soft-attack trumpet or flute voice from Osc A alone; Osc B runs in low-frequency mode and, via Poly-Mod, sweeps Osc A's pulse width. The mod wheel adds vibrato (LFO to FREQ A); raise it only a little (about 1/8 to 1/4). Glide is preset for use as a lead line with UNISON on. Osc B's pulse width is at 5 so its waveform can be switched; Osc A is meant as a square wave (pulse width about 5, tuned by ear to where the octave harmonic drops out). The notes suggest trying other waveforms and adjusting CUTOFF and ENVELOPE AMOUNT for brightness."
+  },
+  "xl": {
+   "aSemi": 24
+  },
+  "xlName": "TRMP/FLT"
+ },
+ {
+  "page": 13,
+  "program": "2-6",
+  "name": "Filter Mod",
+  "polyMod": {
+   "filtEnv": 2.5,
+   "oscB": 5.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": true
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": true,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.5,
+   "fine": 0.0,
+   "saw": true,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": true
+  },
+  "glide": 6.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 10.0,
+   "oscB": 10.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 2.5,
+   "resonance": 5.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 4.0,
+   "decay": 6.0,
+   "sustain": 0.0,
+   "release": 6.0
+  },
+  "ampEnv": {
+   "attack": 3.0,
+   "decay": 0.0,
+   "sustain": 10.0,
+   "release": 6.0
+  },
+  "releaseSwitch": false,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "up 2 octaves",
+   "summary": "Two sawtooth oscillators whose filter is swept through Poly-Mod (filter envelope and Osc B both routed to the filter), giving an audio-rate filter modulation effect. ENVELOPE AMOUNT is at 0 on purpose: the filter envelope is used only as a Poly-Mod source. The mod wheel adds vibrato/tremolo (LFO to both oscillator frequencies and the filter); raise it about 1/8 to 1/4. Glide is preset for use with UNISON as a lead; RELEASE is programmed off and can be switched on for the stored release times. Both pulse widths are at 5 so waveforms can be switched."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 24
+  },
+  "xlName": "FILT MOD"
+ },
+ {
+  "page": 14,
+  "program": "2-7",
+  "name": "Reed Organ",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 6.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": true
+  },
+  "oscB": {
+   "freq": 4.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 6.25,
+  "unison": false,
+  "mixer": {
+   "oscA": 5.0,
+   "oscB": 5.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 5.0,
+   "resonance": 0.0,
+   "envAmount": 2.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 2.0,
+   "decay": 0.0,
+   "sustain": 10.0,
+   "release": 7.0
+  },
+  "ampEnv": {
+   "attack": 5.0,
+   "decay": 5.0,
+   "sustain": 6.0,
+   "release": 4.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 3 octaves plus a major 3rd",
+   "pitchB": "up 2 octaves (the basic pitch)",
+   "summary": "A reedy organ made from Osc A's pulse wave synced to Osc B, with Osc A tuned a major tenth above B to pick the sync harmonic. Osc B has no waveform selected but is set to 5 in the mixer so its pitch can be set and its pulse wave can be added for a fuller sound (its pulse width is at 5 for that). The mod wheel adds vibrato (LFO to FREQ B, which also moves the synced Osc A); raise it about 1/8 to 1/4. The notes suggest trying other waveforms and adjusting CUTOFF for brightness."
+  },
+  "xl": {
+   "aSemi": 40,
+   "bSemi": 24
+  },
+  "xlName": "REED ORG"
+ },
+ {
+  "page": 15,
+  "program": "2-8",
+  "name": "Brass In Fifths",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 2.5,
+   "saw": true,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 3.5,
+   "fine": 0.0,
+   "saw": true,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 6.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 10.0,
+   "oscB": 9.75,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 2.0,
+   "resonance": 0.0,
+   "envAmount": 7.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 5.0,
+   "decay": 5.5,
+   "sustain": 6.5,
+   "release": 5.0
+  },
+  "ampEnv": {
+   "attack": 3.0,
+   "decay": 4.0,
+   "sustain": 6.0,
+   "release": 5.0
+  },
+  "releaseSwitch": false,
+  "notes": {
+   "pitchA": "up 1 octave",
+   "pitchB": "up 1 octave plus a perfect 5th",
+   "summary": "A brass ensemble sound with two sawtooth oscillators tuned a fifth apart, so each key plays a parallel fifth. The mod wheel gives vibrato (LFO to both oscillator frequencies); raise it about 1/8 to 1/4. RELEASE is programmed off and can be switched on for the stored release time. Both pulse widths are at 5 so waveforms can be switched."
+  },
+  "xl": {
+   "aSemi": 12,
+   "bSemi": 19
+  },
+  "xlName": "BRASS5TH"
+ },
+ {
+  "page": 16,
+  "program": "3-1",
+  "name": "Pipe Organ Flutes",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 6.0,
+   "saw": false,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 6.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 8.0,
+   "oscB": 8.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 3.0,
+   "resonance": 5.0,
+   "envAmount": 5.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 3.0,
+   "decay": 4.0,
+   "sustain": 5.0,
+   "release": 6.0
+  },
+  "ampEnv": {
+   "attack": 5.0,
+   "decay": 8.0,
+   "sustain": 6.0,
+   "release": 5.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 3 octaves (no waveform selected)",
+   "pitchB": "up 3 octaves",
+   "summary": "A pipe-organ flute stop built on Osc B's triangle wave. Osc A has no waveform switched on, but its mixer level is set so its pulse wave can be added (both pulse widths are at 5 for that and for waveform switching on Osc B). The wooden 'chiff' at the start of each note comes from the filter settings: the filter envelope's attack, decay and sustain together with cutoff, envelope amount and resonance. The mod wheel adds vibrato (LFO to both frequencies); raise it about 1/8 to 1/4."
+  },
+  "xl": {
+   "aSemi": 36,
+   "bSemi": 36
+  },
+  "xlName": "PIPE FLT"
+ },
+ {
+  "page": 17,
+  "program": "3-2",
+  "name": "Sync II",
+  "polyMod": {
+   "filtEnv": 7.0,
+   "oscB": 0.0,
+   "freqA": true,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 3.0,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": true
+  },
+  "oscB": {
+   "freq": 2.5,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 6.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 4.0,
+   "oscB": 4.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 3.5,
+   "resonance": 0.0,
+   "envAmount": 5.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 4.0,
+   "decay": 7.0,
+   "sustain": 3.0,
+   "release": 3.5
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 10.0,
+   "sustain": 9.0,
+   "release": 0.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 1 octave",
+   "pitchB": "up 1 octave",
+   "summary": "A sync sweep: Osc A's pulse wave is synced to Osc B and the filter envelope sweeps Osc A's frequency through Poly-Mod, giving the classic tearing sync sound on each note. Osc B has no waveform switched on, but its mixer level is set so its pulse wave can be added (both pulse widths at 5, which also lets Osc A's waveform be switched). The mod wheel adds vibrato (LFO to FREQ B); raise it about 1/8 to 1/4. Glide is preset for use as a lead line with UNISON on."
+  },
+  "xl": {
+   "aSemi": 12,
+   "bSemi": 12
+  },
+  "xlName": "SYNC II"
+ },
+ {
+  "page": 18,
+  "program": "3-3",
+  "name": "Electric Piano",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 9.5,
+   "freqA": true,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": true
+  },
+  "oscB": {
+   "freq": 4.5,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": true,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 6.0,
+   "oscB": 5.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 2.5,
+   "resonance": 2.0,
+   "envAmount": 3.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 7.0,
+   "sustain": 3.0,
+   "release": 7.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 7.5,
+   "sustain": 0.0,
+   "release": 7.25
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "up 2 octaves",
+   "summary": "An electric piano with Osc A synced to Osc B and Osc B also modulating Osc A's frequency through Poly-Mod; because of the sync that Poly-Mod effect is small, but switching SYNC off makes it strongly clangorous. The mod wheel can add a vibraphone-like vibrato/tremolo when pushed all the way up. To imitate a piano sustain pedal, switch RELEASE off and use the footswitch to bring the release in and out."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 24
+  },
+  "xlName": "E.PIANO"
+ },
+ {
+  "page": 19,
+  "program": "3-4",
+  "name": "High Strings",
+  "polyMod": {
+   "filtEnv": 0.25,
+   "oscB": 0.25,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 6.0,
+   "saw": false,
+   "pulse": true,
+   "pw": 3.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 6.0,
+   "fine": 1.25,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 3.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": true,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 4.0,
+   "oscB": 4.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 6.0,
+   "resonance": 0.0,
+   "envAmount": 4.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 7.0,
+   "decay": 7.0,
+   "sustain": 8.0,
+   "release": 5.5
+  },
+  "ampEnv": {
+   "attack": 6.0,
+   "decay": 4.0,
+   "sustain": 9.75,
+   "release": 6.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 3 octaves",
+   "pitchB": "up 3 octaves",
+   "summary": "A high string section made from two narrow pulse waves, with Osc B slightly detuned. The mod wheel (LFO to both pulse widths) must be raised about 1/3 to 1/2 for the ensemble effect, more for high notes and less for low ones. CUTOFF and ENVELOPE AMOUNT set the brightness. The notes stress playing string-like lines rather than piano phrasing."
+  },
+  "xl": {
+   "aSemi": 36,
+   "bSemi": 36
+  },
+  "xlName": "HISTRNGS"
+ },
+ {
+  "page": 20,
+  "program": "3-5",
+  "name": "Octave Sawteeth",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 2.5,
+   "saw": true,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.5,
+   "fine": 0.0,
+   "saw": true,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 6.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 4.0,
+   "oscB": 4.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 9.75,
+   "resonance": 0.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 0.0,
+   "release": 6.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 10.0,
+   "release": 6.0
+  },
+  "releaseSwitch": false,
+  "notes": {
+   "pitchA": "up 1 octave",
+   "pitchB": "up 2 octaves",
+   "summary": "Two sawtooth oscillators an octave apart, filter wide open, organ-like gated amp envelope. The mod wheel is set up for vibrato (LFO to both oscillator frequencies); push it up only an eighth to a quarter. Glide is dialled in for lead use and takes effect when UNISON is switched on. The release switch is left off; turn it on for the stored release times. Pulse width is set at 5 on both oscillators so the waveforms can be switched to pulse."
+  },
+  "xl": {
+   "aSemi": 12,
+   "bSemi": 24
+  },
+  "xlName": "OCT SAWS"
+ },
+ {
+  "page": 21,
+  "program": "3-6",
+  "name": "Release-Repeat",
+  "polyMod": {
+   "filtEnv": 4.5,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": true,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 8.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.5,
+   "fine": 1.5,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 8.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 8.0,
+   "oscB": 8.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 6.5,
+   "resonance": 3.0,
+   "envAmount": 2.5,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 3.0,
+   "decay": 0.0,
+   "sustain": 10.0,
+   "release": 5.0
+  },
+  "ampEnv": {
+   "attack": 3.0,
+   "decay": 4.5,
+   "sustain": 8.0,
+   "release": 6.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "up 2 octaves (detuned slightly higher than A with FINE)",
+   "summary": "A pulse-wave sound with an echo-like repeat after the key is let go. Poly-mod sends the filter envelope to Osc A's pulse width; with filter sustain at 10 that pushes Osc A to a silent DC pulse while the key is held, so only Osc B is heard. On release the filter envelope falls faster than the amp envelope, so Osc A briefly sounds as the 'repeat'. Raising the mod wheel (1/8 to 1/2) adds LFO to Osc A for a chorused release; Osc B's fine tune keeps the held sound a little sharp of the repeat."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 24
+  },
+  "xlName": "REL REPT"
+ },
+ {
+  "page": 22,
+  "program": "3-7",
+  "name": "Delayed Harmonic",
+  "polyMod": {
+   "filtEnv": 5.0,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": true,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 8.0,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 2.5,
+   "fine": 0.0,
+   "saw": true,
+   "tri": true,
+   "pulse": true,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 6.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 5.0,
+   "oscB": 5.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 6.0,
+   "resonance": 3.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 6.0,
+   "sustain": 0.0,
+   "release": 0.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 10.0,
+   "release": 5.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 4 octaves",
+   "pitchB": "up 1 octave (the basic pitch)",
+   "summary": "Osc B (saw, triangle and pulse together) is the main tone; Osc A, three octaves higher, fades in as an overtone. Poly-mod routes the filter envelope to Osc A's pulse width: at the start it forces the pulse to silent DC, and as the envelope decays Osc A becomes audible. Held keys give the delayed-harmonic swell; staccato playing makes the harmonic appear as a plucked tone on release. The mod wheel (1/8 to 1/4) adds vibrato to Osc A only; glide is set for UNISON lead use."
+  },
+  "xl": {
+   "aSemi": 48,
+   "bSemi": 12
+  },
+  "xlName": "DLY HARM"
+ },
+ {
+  "page": 23,
+  "program": "3-8",
+  "name": "Echo-Repeat",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 6.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": true
+  },
+  "oscA": {
+   "freq": 6.0,
+   "saw": true,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 6.0,
+   "fine": 2.0,
+   "saw": true,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 6.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 9.75,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 3.0,
+   "resonance": 0.0,
+   "envAmount": 3.5,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 5.0,
+   "sustain": 5.0,
+   "release": 6.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 2.0,
+   "sustain": 6.0,
+   "release": 6.5
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 3 octaves",
+   "pitchB": "up 3 octaves",
+   "summary": "A repeating, echo-like pulsing sound: Osc B is muted in the mixer and used through poly-mod to sweep the filter, so its slight detuning against Osc A creates a beating repeat. The more Osc B's FINE is raised the faster the repeats, and they also speed up higher on the keyboard. Pulse width is left at 5 so the waveforms can be switched. The mod wheel (1/4 to 1/2, or further for something stranger) adds a swirling LFO vibrato to both oscillators."
+  },
+  "xl": {
+   "aSemi": 36,
+   "bSemi": 36
+  },
+  "xlName": "ECHO REP"
+ },
+ {
+  "page": 24,
+  "program": "4-1",
+  "name": "Pulse-Width Mod",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 10.0,
+   "freqA": false,
+   "pwA": true,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 3.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": true,
+   "keyboard": false
+  },
+  "lfo": {
+   "freq": 6.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 10.0,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 4.5,
+   "resonance": 7.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 0.0,
+   "release": 0.0
+  },
+  "ampEnv": {
+   "attack": 3.0,
+   "decay": 4.5,
+   "sustain": 7.0,
+   "release": 8.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "LF mode (used as a low-frequency modulator, not heard)",
+   "summary": "A pulse-width-modulated pulse wave from Osc A alone. Osc B runs in low-frequency mode as a triangle LFO and, through poly-mod at full amount, sweeps Osc A's pulse width. Raising the mod wheel about 1/3 to 1/2 adds a second layer of PWM from the LFO. Osc B's pulse width is left at 5 so its pulse wave can be chosen as the modulation shape instead."
+  },
+  "xl": {
+   "aSemi": 24
+  },
+  "xlName": "PWM"
+ },
+ {
+  "page": 25,
+  "program": "4-2",
+  "name": "Slow Sync Sweep",
+  "polyMod": {
+   "filtEnv": 10.0,
+   "oscB": 0.0,
+   "freqA": true,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 2.0,
+   "sync": true
+  },
+  "oscB": {
+   "freq": 4.5,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 6.5,
+   "saw": false,
+   "tri": false,
+   "square": true
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 4.5,
+   "oscB": 4.5,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 10.0,
+   "resonance": 0.0,
+   "envAmount": 10.0,
+   "keyboard": false
+  },
+  "filterEnv": {
+   "attack": 7.5,
+   "decay": 7.0,
+   "sustain": 0.0,
+   "release": 6.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 4.25,
+   "sustain": 7.0,
+   "release": 7.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "up 2 octaves",
+   "summary": "A slow oscillator-sync sweep: Osc A (narrow pulse, synced to B) has its pitch swept by the filter envelope through poly-mod, with a slow attack and decay, so long held notes give the full sweep. The mod wheel adds vibrato (move it 1/8 to 1/4). Osc B has no waveform selected, but its mixer level is up so it can be added, and its pulse width is left at 5 for adding its pulse wave."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 24
+  },
+  "xlName": "SLO SWP"
+ },
+ {
+  "page": 26,
+  "program": "4-3",
+  "name": "Fourths With Resonance",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 2.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 7.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 4.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": true,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 6.0,
+   "oscB": 6.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 3.0,
+   "resonance": 7.0,
+   "envAmount": 8.0,
+   "keyboard": false
+  },
+  "filterEnv": {
+   "attack": 8.0,
+   "decay": 8.0,
+   "sustain": 0.0,
+   "release": 8.0
+  },
+  "ampEnv": {
+   "attack": 4.5,
+   "decay": 5.75,
+   "sustain": 8.0,
+   "release": 8.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "up 1 octave plus a perfect 5th (a fourth below A)",
+   "summary": "Two pulse waves a fourth apart through a resonant filter with a slow envelope sweep; hold keys down so the slow attack and decay can develop. Pushing the mod wheel fully up sends the triangle LFO to both pulse widths, making Osc A and Osc B alternate as the sound source for an alternating-fourths effect."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 19
+  },
+  "xlName": "4THS RES"
+ },
+ {
+  "page": 27,
+  "program": "4-4",
+  "name": "Sweeping Harmonics",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 4.0,
+   "freqA": false,
+   "pwA": true,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.0,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 5.5,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": true,
+   "keyboard": false
+  },
+  "lfo": {
+   "freq": 2.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": true
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 5.0,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 7.0,
+   "resonance": 7.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 0.0,
+   "release": 0.0
+  },
+  "ampEnv": {
+   "attack": 3.0,
+   "decay": 0.0,
+   "sustain": 9.75,
+   "release": 10.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "LF mode (modulation source only)",
+   "summary": "Osc A's pulse wave has its width modulated fairly quickly by Osc B running as a low-frequency triangle through poly-mod, giving shifting harmonics. Moving the mod wheel 1/3 to 2/3 lets the slow triangle LFO sweep the filter through those harmonics. Resonance is set just short of self-oscillation."
+  },
+  "xl": {
+   "aSemi": 24
+  },
+  "xlName": "SWP HARM"
+ },
+ {
+  "page": 28,
+  "program": "4-5",
+  "name": "Slow Sync",
+  "polyMod": {
+   "filtEnv": 7.0,
+   "oscB": 0.0,
+   "freqA": true,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 4.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 4.0,
+   "sync": true
+  },
+  "oscB": {
+   "freq": 0.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 4.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": false,
+   "filter": true
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 6.0,
+   "oscB": 4.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 3.25,
+   "resonance": 0.0,
+   "envAmount": 8.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 8.0,
+   "decay": 0.0,
+   "sustain": 10.0,
+   "release": 8.0
+  },
+  "ampEnv": {
+   "attack": 3.0,
+   "decay": 0.0,
+   "sustain": 10.0,
+   "release": 8.0
+  },
+  "releaseSwitch": false,
+  "notes": {
+   "pitchA": "up 2 octaves",
+   "pitchB": "up 0 (lowest setting)",
+   "summary": "A slow sync sweep: Osc A is synced to a low Osc B and the filter envelope's slow attack sweeps Osc A's pitch through poly-mod while also opening the filter, so how long keys are held strongly changes the sweep. The release switch is off; turn it on for the programmed release time. The mod wheel (about 2/3 up) sends the LFO to Osc A's pulse width and the filter for a strong tremolo/repeat effect."
+  },
+  "xl": {
+   "aSemi": 24,
+   "bSemi": 0
+  },
+  "xlName": "SLO SYNC"
+ },
+ {
+  "page": 29,
+  "program": "4-6",
+  "name": "Random Arpeggiator",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 10.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": true
+  },
+  "oscA": {
+   "freq": 2.5,
+   "saw": true,
+   "pulse": false,
+   "pw": 3.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 2.0,
+   "loFreq": true,
+   "keyboard": false
+  },
+  "lfo": {
+   "freq": 4.0,
+   "saw": true,
+   "tri": false,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 6.0,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 2.0,
+   "resonance": 0.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 0.0,
+   "release": 0.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 3.5,
+   "sustain": 10.0,
+   "release": 10.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 1 octave",
+   "pitchB": "LF mode",
+   "summary": "A self-playing random arpeggio: Osc B in low-frequency mode modulates the filter through Poly-Mod, and its pulse shape chops Osc A into repeating notes. Strike several keys; they need not be held because amp release is at 10. Raising the mod wheel lets the LFO vary the repetition speed via Freq B. The notes say Osc A pulse width is 3; Osc A frequency sets arpeggio speed and Osc A pulse width sets note length, and routing wheel mod to Freq A instead gives sliding pitches."
+  },
+  "xl": {
+   "aSemi": 12
+  },
+  "xlName": "RAND ARP"
+ },
+ {
+  "page": 30,
+  "program": "4-7",
+  "name": "Sawtooth Arpeggiator",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 10.0,
+   "freqA": false,
+   "pwA": true,
+   "filter": true
+  },
+  "oscA": {
+   "freq": 2.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 0.0,
+   "fine": 0.0,
+   "saw": true,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": true,
+   "keyboard": false
+  },
+  "lfo": {
+   "freq": 5.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": false,
+   "filter": true
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 7.0,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 5.0,
+   "resonance": 5.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 10.0,
+   "sustain": 5.0,
+   "release": 10.0
+  },
+  "ampEnv": {
+   "attack": 2.0,
+   "decay": 5.5,
+   "sustain": 10.0,
+   "release": 10.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 1 octave",
+   "pitchB": "LF mode",
+   "summary": "An arpeggio-like effect made by a low-frequency sawtooth on Osc B sweeping Osc A's pulse width and the resonant filter through Poly-Mod. Pushing the mod wheel fully up adds the triangle LFO to the same destinations for a stronger effect. The notes say Osc B pulse width is set at 5 so its pulse wave can be tried as the modulation source, and suggest turning LO FREQ off and KEYBOARD on for a different sound. The filter envelope is set up but has no effect until ENVELOPE AMOUNT is raised above 0."
+  },
+  "xl": {
+   "aSemi": 12
+  },
+  "xlName": "SAW ARP"
+ },
+ {
+  "page": 31,
+  "program": "4-8",
+  "name": "Clangorous Bells",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 10.0,
+   "freqA": true,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 5.0,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.5,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": true,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 4.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 10.0,
+   "oscB": 5.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 3.0,
+   "resonance": 5.0,
+   "envAmount": 3.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 7.0,
+   "sustain": 3.0,
+   "release": 7.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 7.5,
+   "sustain": 0.0,
+   "release": 8.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 2 octaves plus a tritone",
+   "pitchB": "up 2 octaves less a half step",
+   "summary": "A metallic, clangy bell made by Osc B at audio rate frequency-modulating Osc A through Poly-Mod, with the two set a dissonant interval apart. Notes decay and ring out with the release switch on. Moving the mod wheel from half to full up adds LFO pulse-width modulation of Osc A for a repeating, echo-like effect. The notes suggest raising filter resonance for more effect."
+  },
+  "xl": {
+   "aSemi": 30,
+   "bSemi": 23
+  },
+  "xlName": "CLNGBELL"
+ },
+ {
+  "page": 32,
+  "program": "5-1",
+  "name": "Alien",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 5.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": true
+  },
+  "oscA": {
+   "freq": 0.0,
+   "saw": false,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 10.0,
+   "fine": 10.0,
+   "saw": false,
+   "tri": true,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": false
+  },
+  "lfo": {
+   "freq": 1.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": true,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": true,
+  "mixer": {
+   "oscA": 0.0,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 5.0,
+   "resonance": 9.75,
+   "envAmount": 1.0,
+   "keyboard": false
+  },
+  "filterEnv": {
+   "attack": 10.0,
+   "decay": 10.0,
+   "sustain": 0.0,
+   "release": 10.0
+  },
+  "ampEnv": {
+   "attack": 7.5,
+   "decay": 10.0,
+   "sustain": 10.0,
+   "release": 10.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 0",
+   "pitchB": "up 5 octaves, with FINE at 10",
+   "summary": "An eerie, slowly evolving unison effect: all mixer levels are at 0, so the sound comes from the self-oscillating filter (resonance 10), with high-pitched Osc B modulating the filter through Poly-Mod and a slow filter envelope. Move the mod wheel fully up so the LFO wobbles Osc B's pitch, and hold the key for about 30 seconds to let the effect develop. The notes suggest also routing wheel mod to the filter and raising the filter envelope amount to exaggerate it."
+  },
+  "xl": {
+   "aSemi": 0,
+   "bSemi": 60
+  },
+  "xlName": "ALIEN"
+ },
+ {
+  "page": 33,
+  "program": "5-2",
+  "name": "Noise Sweep",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 7.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": true
+  },
+  "oscA": {
+   "freq": 0.0,
+   "saw": false,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 0.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": true,
+   "keyboard": false
+  },
+  "lfo": {
+   "freq": 2.5,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 2.5,
+   "freqA": false,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": true
+  },
+  "glide": 0.0,
+  "unison": true,
+  "mixer": {
+   "oscA": 0.0,
+   "oscB": 0.0,
+   "noise": 10.0
+  },
+  "filter": {
+   "cutoff": 3.0,
+   "resonance": 6.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 0.0,
+   "release": 0.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 6.0,
+   "release": 10.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 0",
+   "pitchB": "LF mode",
+   "summary": "A sweeping noise effect: the oscillators are not heard, only noise through a resonant filter that a slow triangle on Osc B (LF mode) sweeps via Poly-Mod. Playing in different registers changes the brightness because the filter tracks the keyboard. The notes say both oscillators' pulse widths are at 5 so Osc A's pulse could be added or Osc B's pulse used as the modulator. Raising the mod wheel about a third adds LFO/noise modulation of the filter; going further gives a different effect."
+  },
+  "xl": {
+   "aSemi": 0
+  },
+  "xlName": "NOISESWP"
+ },
+ {
+  "page": 34,
+  "program": "5-3",
+  "name": "Descending Bells",
+  "polyMod": {
+   "filtEnv": 4.0,
+   "oscB": 10.0,
+   "freqA": true,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 2.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 2.5,
+   "fine": 0.0,
+   "saw": false,
+   "tri": true,
+   "pulse": true,
+   "pw": 3.0,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 5.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": true,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 10.0,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 2.0,
+   "resonance": 6.0,
+   "envAmount": 3.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 8.0,
+   "sustain": 10.0,
+   "release": 9.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 7.0,
+   "sustain": 10.0,
+   "release": 8.75
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 1 octave",
+   "pitchB": "up 1 octave",
+   "summary": "A bell tone whose pitch falls: the filter envelope, through Poly-Mod, sweeps Osc A's frequency downward, while Osc B at the same pitch adds audio-rate FM for a metallic timbre. Only Osc A is heard in the mixer. Moving the mod wheel half to three-quarters up adds triangle-LFO pulse-width modulation of Osc A for a phaser-like shimmer. The notes suggest adjusting filter cutoff to change brightness."
+  },
+  "xl": {
+   "aSemi": 12,
+   "bSemi": 12
+  },
+  "xlName": "DESCBELL"
+ },
+ {
+  "page": 35,
+  "program": "5-4",
+  "name": "Descending Pulse Wave Mod",
+  "polyMod": {
+   "filtEnv": 7.5,
+   "oscB": 6.0,
+   "freqA": true,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 2.5,
+   "saw": false,
+   "pulse": true,
+   "pw": 4.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 4.0,
+   "loFreq": true,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 7.0,
+   "saw": true,
+   "tri": false,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": true,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": false
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 7.0,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 5.0,
+   "resonance": 6.0,
+   "envAmount": 3.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.5,
+   "decay": 9.0,
+   "sustain": 5.0,
+   "release": 6.25
+  },
+  "ampEnv": {
+   "attack": 2.0,
+   "decay": 6.0,
+   "sustain": 10.0,
+   "release": 7.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 1 octave",
+   "pitchB": "LF mode",
+   "summary": "Osc A's pitch is swept by the filter envelope and stepped by a low-frequency pulse from Osc B (LF mode, keyboard-tracked) through Poly-Mod, giving a descending, pulsing pitch pattern. Only Osc A is heard. Raising the mod wheel about halfway adds fast sawtooth LFO modulation of Osc A's pitch for an extra effect."
+  },
+  "xl": {
+   "aSemi": 12
+  },
+  "xlName": "DESC PWM"
+ },
+ {
+  "page": 36,
+  "program": "5-5",
+  "name": "Helicopter",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 0.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": false
+  },
+  "oscA": {
+   "freq": 0.0,
+   "saw": false,
+   "pulse": true,
+   "pw": 3.0,
+   "sync": true
+  },
+  "oscB": {
+   "freq": 3.5,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": false,
+   "pw": 5.0,
+   "loFreq": false,
+   "keyboard": false
+  },
+  "lfo": {
+   "freq": 7.5,
+   "saw": false,
+   "tri": true,
+   "square": true
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": true
+  },
+  "glide": 10.0,
+  "unison": true,
+  "mixer": {
+   "oscA": 10.0,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 5.5,
+   "resonance": 0.0,
+   "envAmount": 0.0,
+   "keyboard": false
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 0.0,
+   "release": 0.0
+  },
+  "ampEnv": {
+   "attack": 8.0,
+   "decay": 0.0,
+   "sustain": 10.0,
+   "release": 10.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 0",
+   "pitchB": "tuned to a low E, an octave and a major third above the lowest note (with KEYBOARD off)",
+   "summary": "A helicopter effect: Osc A is synced to a fixed-pitch Osc B (keyboard tracking off) and played in unison with full glide, so pitches swoop between notes. Raise the mod wheel at least a third (half to full for more) so the fast LFO chops the filter for the rotor sound; without it the patch sounds like distant aircraft. Play in the bottom three octaves, alternating low and middle C while nudging the pitch and mod wheels. The notes say to tune Osc B after switching its KEYBOARD off."
+  },
+  "xl": {
+   "aSemi": 0,
+   "bSemi": 16
+  },
+  "xlName": "HELICPTR"
+ },
+ {
+  "page": 37,
+  "program": "5-6",
+  "name": "Resonance Bells",
+  "polyMod": {
+   "filtEnv": 0.0,
+   "oscB": 5.0,
+   "freqA": false,
+   "pwA": false,
+   "filter": true
+  },
+  "oscA": {
+   "freq": 0.0,
+   "saw": false,
+   "pulse": false,
+   "pw": 5.0,
+   "sync": false
+  },
+  "oscB": {
+   "freq": 4.0,
+   "fine": 0.0,
+   "saw": false,
+   "tri": false,
+   "pulse": true,
+   "pw": 6.5,
+   "loFreq": false,
+   "keyboard": true
+  },
+  "lfo": {
+   "freq": 4.0,
+   "saw": false,
+   "tri": true,
+   "square": false
+  },
+  "wheelMod": {
+   "sourceMix": 0.0,
+   "freqA": false,
+   "freqB": false,
+   "pwA": false,
+   "pwB": false,
+   "filter": true
+  },
+  "glide": 0.0,
+  "unison": false,
+  "mixer": {
+   "oscA": 0.0,
+   "oscB": 0.0,
+   "noise": 0.0
+  },
+  "filter": {
+   "cutoff": 3.5,
+   "resonance": 10.0,
+   "envAmount": 0.0,
+   "keyboard": true
+  },
+  "filterEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 0.0,
+   "release": 0.0
+  },
+  "ampEnv": {
+   "attack": 0.0,
+   "decay": 0.0,
+   "sustain": 6.5,
+   "release": 7.0
+  },
+  "releaseSwitch": true,
+  "notes": {
+   "pitchA": "up 0",
+   "pitchB": "up 2 octaves",
+   "summary": "Bell-like tones from the self-oscillating filter (resonance 10, all mixer levels at 0), with Osc B's pulse wave modulating the filter frequency at audio rate through Poly-Mod for an inharmonic, ringing timbre. Raising the mod wheel about a third lets the triangle LFO sweep the filter for a sweeping-pitch effect. The notes suggest adjusting cutoff to change the bells' range and tone."
+  },
+  "xl": {
+   "aSemi": 0,
+   "bSemi": 24
+  },
+  "xlName": "RESOBELL"
+ }
+]

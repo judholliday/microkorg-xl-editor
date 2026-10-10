@@ -1,0 +1,2189 @@
+{
+ "source": "Roland Juno-60 Owner's Manual, \"Sample Sounds\" (pp. 24-28): the 56 factory patches. Transcribed from dzannotti/junox's CSV, proofread against the manual and corrected in 12 places.",
+ "patches": [
+  {
+   "program": "11",
+   "name": "Strings 1",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "L",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 7.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 4.0,
+    "decay": 0.0,
+    "sustain": 10.0,
+    "release": 4.5
+   },
+   "chorus": 1
+  },
+  {
+   "program": "12",
+   "name": "Strings 2",
+   "transpose": 0,
+   "lfo": {
+    "rate": 4.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 6.0,
+    "pwmMode": "L",
+    "pulse": true,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 7.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": -2.0
+   },
+   "env": {
+    "attack": 4.0,
+    "decay": 0.0,
+    "sustain": 10.0,
+    "release": 4.5
+   },
+   "chorus": 2
+  },
+  {
+   "program": "13",
+   "name": "Strings 3",
+   "transpose": 0,
+   "lfo": {
+    "rate": 3.0,
+    "delay": 8.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 7.0,
+    "pwmMode": "L",
+    "pulse": true,
+    "saw": true,
+    "sub": 10.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 5.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": -2.0
+   },
+   "env": {
+    "attack": 3.0,
+    "decay": 0.0,
+    "sustain": 10.0,
+    "release": 6.0
+   },
+   "chorus": 2
+  },
+  {
+   "program": "14",
+   "name": "Organ 1",
+   "transpose": 0,
+   "lfo": {
+    "rate": 2.0,
+    "delay": 8.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 5.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 10.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 4.0,
+    "res": 6.0,
+    "envPolarity": "N",
+    "env": 4.5,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 0.0,
+    "sustain": 0.0,
+    "release": 0.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "15",
+   "name": "Organ 2",
+   "transpose": 0,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 4.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 5.5,
+    "pwmMode": "L",
+    "pulse": true,
+    "saw": false,
+    "sub": 8.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.5,
+    "res": 5.5,
+    "envPolarity": "N",
+    "env": 4.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 1.0,
+    "sustain": 0.0,
+    "release": 1.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "16",
+   "name": "Organ 3",
+   "transpose": 12,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 4.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 5.5,
+    "pwmMode": "L",
+    "pulse": true,
+    "saw": false,
+    "sub": 8.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.5,
+    "res": 5.5,
+    "envPolarity": "N",
+    "env": 3.5,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 1.0,
+    "sustain": 0.0,
+    "release": 1.0
+   },
+   "chorus": 2
+  },
+  {
+   "program": "17",
+   "name": "Brass",
+   "transpose": 0,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 6.5,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 1.5,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 0.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 8.5,
+    "lfo": 0.0,
+    "kybd": 4.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 2.0
+   },
+   "env": {
+    "attack": 2.5,
+    "decay": 4.0,
+    "sustain": 6.0,
+    "release": 2.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "18",
+   "name": "Phase Brass",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 10.0,
+    "pwmMode": "E",
+    "pulse": true,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.0,
+    "res": 1.0,
+    "envPolarity": "N",
+    "env": 5.5,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": -1.0
+   },
+   "env": {
+    "attack": 2.0,
+    "decay": 4.0,
+    "sustain": 4.0,
+    "release": 3.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "21",
+   "name": "Piano 1",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 3.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 4.5,
+    "pwm": 6.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 1.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 7.0,
+    "lfo": 0.0,
+    "kybd": 4.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 2.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 8.0,
+    "sustain": 1.5,
+    "release": 3.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "22",
+   "name": "Piano 2",
+   "transpose": 12,
+   "lfo": {
+    "rate": 4.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 4.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 4.5,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.5,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 2.5,
+    "lfo": 2.0,
+    "kybd": 8.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 3.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 7.5,
+    "sustain": 0.0,
+    "release": 3.5
+   },
+   "chorus": 0
+  },
+  {
+   "program": "23",
+   "name": "Celesta",
+   "transpose": 0,
+   "lfo": {
+    "rate": 3.5,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 5.0,
+    "pwmMode": "E",
+    "pulse": true,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 3.5,
+    "res": 8.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 1.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 6.5,
+    "sustain": 2.0,
+    "release": 5.5
+   },
+   "chorus": 0
+  },
+  {
+   "program": "24",
+   "name": "Mellow Piano",
+   "transpose": 0,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 0.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 5.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 2.5,
+    "lfo": 1.0,
+    "kybd": 9.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 2.0
+   },
+   "env": {
+    "attack": 1.0,
+    "decay": 7.5,
+    "sustain": 2.0,
+    "release": 8.5
+   },
+   "chorus": 1
+  },
+  {
+   "program": "25",
+   "name": "Harpsichord 1",
+   "transpose": 12,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 4.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 3.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 7.0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 3.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 5.0,
+    "lfo": 0.0,
+    "kybd": 7.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": -1.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 6.0,
+    "sustain": 3.5,
+    "release": 2.5
+   },
+   "chorus": 1
+  },
+  {
+   "program": "26",
+   "name": "Harpsichord 2",
+   "transpose": 12,
+   "lfo": {
+    "rate": 5.5,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 2.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 8.5,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 5.0,
+    "res": 2.5,
+    "envPolarity": "N",
+    "env": 3.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 5.0,
+    "sustain": 1.5,
+    "release": 5.0
+   },
+   "chorus": 2
+  },
+  {
+   "program": "27",
+   "name": "Guitar",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 6.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 2,
+   "vcf": {
+    "freq": 3.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 4.5,
+    "lfo": 1.5,
+    "kybd": 5.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 4.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 5.5,
+    "sustain": 3.5,
+    "release": 6.5
+   },
+   "chorus": 0
+  },
+  {
+   "program": "28",
+   "name": "Synthesizer Harp",
+   "transpose": 0,
+   "lfo": {
+    "rate": 3.0,
+    "delay": 8.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 5.0,
+    "lfo": 0.0,
+    "kybd": 8.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 1.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 5.5,
+    "sustain": 3.0,
+    "release": 5.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "31",
+   "name": "Bass 1",
+   "transpose": -12,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 5.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": true,
+    "sub": 3.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.0,
+    "res": 2.5,
+    "envPolarity": "N",
+    "env": 3.5,
+    "lfo": 0.0,
+    "kybd": 0.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 4.0,
+    "sustain": 1.0,
+    "release": 2.5
+   },
+   "chorus": 1
+  },
+  {
+   "program": "32",
+   "name": "Bass 2",
+   "transpose": -12,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 5.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.0,
+    "res": 5.0,
+    "envPolarity": "N",
+    "env": 4.5,
+    "lfo": 0.0,
+    "kybd": 5.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": -1.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 3.0,
+    "sustain": 3.5,
+    "release": 2.5
+   },
+   "chorus": 1
+  },
+  {
+   "program": "33",
+   "name": "Clavichord 1",
+   "transpose": -12,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 2.5,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 4.0,
+    "pwm": 8.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 0.0,
+    "res": 3.0,
+    "envPolarity": "N",
+    "env": 8.0,
+    "lfo": 0.0,
+    "kybd": 6.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 2.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 5.0,
+    "sustain": 3.5,
+    "release": 1.5
+   },
+   "chorus": 1
+  },
+  {
+   "program": "34",
+   "name": "Clavichord 2",
+   "transpose": -12,
+   "lfo": {
+    "rate": 1.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 8.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 5.5,
+    "res": 7.0,
+    "envPolarity": "N",
+    "env": 2.0,
+    "lfo": 2.5,
+    "kybd": 7.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 5.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 4.5,
+    "sustain": 2.0,
+    "release": 2.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "35",
+   "name": "Pizzicato Sound 1",
+   "transpose": 0,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 3.5,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 4.5,
+    "res": 3.0,
+    "envPolarity": "N",
+    "env": 3.0,
+    "lfo": 3.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 3.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 2.0,
+    "sustain": 3.5,
+    "release": 5.5
+   },
+   "chorus": 1
+  },
+  {
+   "program": "36",
+   "name": "Pizzicato Sound 2",
+   "transpose": 12,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 2.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 3.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 5.0,
+    "res": 3.0,
+    "envPolarity": "N",
+    "env": 3.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 1.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 3.0,
+    "sustain": 3.0,
+    "release": 4.0
+   },
+   "chorus": 2
+  },
+  {
+   "program": "37",
+   "name": "Xylophone",
+   "transpose": 12,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 5.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": false,
+    "sub": 10.0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 4.0,
+    "res": 5.0,
+    "envPolarity": "N",
+    "env": 3.0,
+    "lfo": 0.0,
+    "kybd": 6.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 5.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 3.5,
+    "sustain": 0.0,
+    "release": 3.5
+   },
+   "chorus": 0
+  },
+  {
+   "program": "38",
+   "name": "Glockenspiel",
+   "transpose": 12,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 4.5,
+    "res": 5.0,
+    "envPolarity": "N",
+    "env": 3.0,
+    "lfo": 0.0,
+    "kybd": 6.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 4.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 3.0,
+    "sustain": 2.5,
+    "release": 5.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "41",
+   "name": "Violin",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 2.0,
+    "pwm": 0.0,
+    "pwmMode": "L",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 6.5,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 2.0
+   },
+   "env": {
+    "attack": 4.0,
+    "decay": 0.0,
+    "sustain": 10.0,
+    "release": 4.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "42",
+   "name": "Trumpet",
+   "transpose": 0,
+   "lfo": {
+    "rate": 2.5,
+    "delay": 6.5,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 1.5,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 0.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 8.5,
+    "lfo": 0.0,
+    "kybd": 4.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 2.0
+   },
+   "env": {
+    "attack": 2.5,
+    "decay": 4.0,
+    "sustain": 6.0,
+    "release": 2.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "43",
+   "name": "Horn",
+   "transpose": 0,
+   "lfo": {
+    "rate": 2.5,
+    "delay": 7.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 2.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 5.5,
+    "lfo": 2.0,
+    "kybd": 4.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 2.0
+   },
+   "env": {
+    "attack": 4.0,
+    "decay": 5.0,
+    "sustain": 6.0,
+    "release": 3.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "44",
+   "name": "Tuba",
+   "transpose": -12,
+   "lfo": {
+    "rate": 2.5,
+    "delay": 7.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 1.5,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 1.5,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 6.0,
+    "lfo": 0.0,
+    "kybd": 4.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 5.0
+   },
+   "env": {
+    "attack": 3.0,
+    "decay": 4.0,
+    "sustain": 4.0,
+    "release": 3.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "45",
+   "name": "Flute",
+   "transpose": 12,
+   "lfo": {
+    "rate": 5.5,
+    "delay": 5.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 1.5
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 5.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 2.0,
+    "kybd": 6.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 5.0
+   },
+   "env": {
+    "attack": 2.0,
+    "decay": 6.0,
+    "sustain": 5.0,
+    "release": 2.5
+   },
+   "chorus": 0
+  },
+  {
+   "program": "46",
+   "name": "Clarinet",
+   "transpose": 0,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 6.5,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 1.5,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 5.0,
+    "res": 3.0,
+    "envPolarity": "N",
+    "env": 2.5,
+    "lfo": 0.0,
+    "kybd": 6.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 1.0
+   },
+   "env": {
+    "attack": 2.5,
+    "decay": 6.0,
+    "sustain": 6.0,
+    "release": 2.5
+   },
+   "chorus": 0
+  },
+  {
+   "program": "47",
+   "name": "Oboe",
+   "transpose": 0,
+   "lfo": {
+    "rate": 5.5,
+    "delay": 6.5,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 1.5,
+    "pwm": 6.5,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 3,
+   "vcf": {
+    "freq": 4.5,
+    "res": 5.0,
+    "envPolarity": "N",
+    "env": 2.5,
+    "lfo": 0.0,
+    "kybd": 5.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 5.0
+   },
+   "env": {
+    "attack": 2.0,
+    "decay": 6.0,
+    "sustain": 6.0,
+    "release": 2.5
+   },
+   "chorus": 0
+  },
+  {
+   "program": "48",
+   "name": "English Horn",
+   "transpose": -12,
+   "lfo": {
+    "rate": 5.0,
+    "delay": 7.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 2.0,
+    "pwm": 6.5,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 3,
+   "vcf": {
+    "freq": 5.0,
+    "res": 7.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 1.5,
+    "kybd": 5.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 5.0
+   },
+   "env": {
+    "attack": 2.0,
+    "decay": 6.0,
+    "sustain": 6.0,
+    "release": 2.5
+   },
+   "chorus": 0
+  },
+  {
+   "program": "51",
+   "name": "Funny Cat",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 2.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 3.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 1.5,
+    "res": 7.5,
+    "envPolarity": "N",
+    "env": 5.0,
+    "lfo": 2.0,
+    "kybd": 5.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 3.0
+   },
+   "env": {
+    "attack": 2.5,
+    "decay": 4.0,
+    "sustain": 10.0,
+    "release": 1.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "52",
+   "name": "Wah Brass",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 2.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 3.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.0,
+    "res": 7.0,
+    "envPolarity": "N",
+    "env": 4.5,
+    "lfo": 0.0,
+    "kybd": 6.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": 2.0
+   },
+   "env": {
+    "attack": 3.0,
+    "decay": 3.0,
+    "sustain": 4.0,
+    "release": 2.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "53",
+   "name": "Phase Combination",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 2.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 8.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 6.0,
+    "res": 2.0,
+    "envPolarity": "N",
+    "env": 3.0,
+    "lfo": 0.0,
+    "kybd": 2.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": -2.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 7.0,
+    "sustain": 2.0,
+    "release": 2.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "54",
+   "name": "Reed 1",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 2.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 4.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 1.0,
+    "res": 6.0,
+    "envPolarity": "N",
+    "env": 7.0,
+    "lfo": 0.0,
+    "kybd": 5.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": 1.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 8.5,
+    "sustain": 5.0,
+    "release": 1.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "55",
+   "name": "Popcorn",
+   "transpose": 12,
+   "lfo": {
+    "rate": 0.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": false,
+    "sub": 10.0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 2.5,
+    "res": 2.0,
+    "envPolarity": "N",
+    "env": 5.5,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 3.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 3.0,
+    "sustain": 2.0,
+    "release": 0.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "56",
+   "name": "Reed 2",
+   "transpose": 12,
+   "lfo": {
+    "rate": 3.0,
+    "delay": 8.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": false,
+    "sub": 10.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 2.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 6.0,
+    "lfo": 0.0,
+    "kybd": 8.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 5.5,
+    "sustain": 3.0,
+    "release": 6.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "57",
+   "name": "Reed 3",
+   "transpose": 12,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 2.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 2.0,
+    "pwm": 5.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": false,
+    "sub": 10.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 3.0,
+    "res": 2.0,
+    "envPolarity": "N",
+    "env": 3.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 1.0
+   },
+   "env": {
+    "attack": 2.5,
+    "decay": 0.0,
+    "sustain": 10.0,
+    "release": 2.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "58",
+   "name": "PWM Chorus",
+   "transpose": 0,
+   "lfo": {
+    "rate": 3.0,
+    "delay": 0.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 5.0,
+    "pwmMode": "L",
+    "pulse": true,
+    "saw": false,
+    "sub": 10.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 8.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": -3.0
+   },
+   "env": {
+    "attack": 3.0,
+    "decay": 0.0,
+    "sustain": 10.0,
+    "release": 4.0
+   },
+   "chorus": 2
+  },
+  {
+   "program": "61",
+   "name": "Synthesizer Organ",
+   "transpose": 0,
+   "lfo": {
+    "rate": 4.5,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 6.5,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 7.5,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 2.5,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 5.0,
+    "lfo": 2.0,
+    "kybd": 7.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 2.0,
+    "sustain": 5.0,
+    "release": 2.5
+   },
+   "chorus": 2
+  },
+  {
+   "program": "62",
+   "name": "Effect Sound 1",
+   "transpose": 12,
+   "lfo": {
+    "rate": 4.5,
+    "delay": 6.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 1.5,
+    "pwm": 10.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": true,
+    "sub": 7.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 6.5,
+    "res": 0.0,
+    "envPolarity": "I",
+    "env": 4.5,
+    "lfo": 0.0,
+    "kybd": 7.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 2.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 5.0,
+    "sustain": 0.0,
+    "release": 5.5
+   },
+   "chorus": 1
+  },
+  {
+   "program": "63",
+   "name": "Effect Sound 2",
+   "transpose": 0,
+   "lfo": {
+    "rate": 5.5,
+    "delay": 9.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 3.0,
+    "pwmMode": "L",
+    "pulse": false,
+    "saw": true,
+    "sub": 6.5,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 6.5,
+    "res": 3.0,
+    "envPolarity": "I",
+    "env": 4.0,
+    "lfo": 0.0,
+    "kybd": 1.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": 1.0
+   },
+   "env": {
+    "attack": 6.5,
+    "decay": 5.5,
+    "sustain": 2.0,
+    "release": 6.5
+   },
+   "chorus": 1
+  },
+  {
+   "program": "64",
+   "name": "Space Harp",
+   "transpose": 0,
+   "lfo": {
+    "rate": 5.5,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 2.0,
+    "pwm": 0.0,
+    "pwmMode": "E",
+    "pulse": false,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 6.5,
+    "res": 5.0,
+    "envPolarity": "N",
+    "env": 5.5,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 1.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 8.0,
+    "sustain": 8.0,
+    "release": 9.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "65",
+   "name": "Funk",
+   "transpose": 0,
+   "lfo": {
+    "rate": 3.0,
+    "delay": 2.5,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 6.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": true,
+    "sub": 10.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 7.5,
+    "res": 6.0,
+    "envPolarity": "I",
+    "env": 5.0,
+    "lfo": 0.0,
+    "kybd": 4.5
+   },
+   "vca": {
+    "mode": "G",
+    "level": -3.0
+   },
+   "env": {
+    "attack": 6.0,
+    "decay": 5.0,
+    "sustain": 0.0,
+    "release": 0.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "66",
+   "name": "Space Sound 1",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 7.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 2.0,
+    "pwm": 4.5,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": false,
+    "sub": 10.0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 6.5,
+    "res": 7.0,
+    "envPolarity": "I",
+    "env": 5.5,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "G",
+    "level": -2.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 8.0,
+    "sustain": 0.0,
+    "release": 3.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "67",
+   "name": "Mysterious Invention",
+   "transpose": 0,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 8.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 2.0,
+    "pwm": 8.0,
+    "pwmMode": "E",
+    "pulse": true,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 8.0,
+    "res": 7.0,
+    "envPolarity": "I",
+    "env": 6.0,
+    "lfo": 2.5,
+    "kybd": 0.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 10.0,
+    "sustain": 0.0,
+    "release": 10.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "68",
+   "name": "Space Sound 2",
+   "transpose": 0,
+   "lfo": {
+    "rate": 3.0,
+    "delay": 3.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 6.0,
+    "pwmMode": "M",
+    "pulse": true,
+    "saw": true,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 2.0,
+    "res": 8.5,
+    "envPolarity": "N",
+    "env": 6.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": -3.0
+   },
+   "env": {
+    "attack": 10.0,
+    "decay": 10.0,
+    "sustain": 10.0,
+    "release": 10.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "71",
+   "name": "Percussive Sound 1",
+   "transpose": 12,
+   "lfo": {
+    "rate": 0.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "E",
+    "pulse": false,
+    "saw": false,
+    "sub": 0,
+    "noise": 10.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 4.0,
+    "res": 10.0,
+    "envPolarity": "N",
+    "env": 1.5,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 5.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 3.0,
+    "sustain": 0.0,
+    "release": 4.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "72",
+   "name": "Percussive Sound 2",
+   "transpose": 0,
+   "lfo": {
+    "rate": 0.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "E",
+    "pulse": false,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 5.0,
+    "res": 10.0,
+    "envPolarity": "I",
+    "env": 3.5,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 5.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 3.0,
+    "sustain": 0.0,
+    "release": 4.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "73",
+   "name": "Whistle",
+   "transpose": 12,
+   "lfo": {
+    "rate": 5.5,
+    "delay": 5.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": false,
+    "sub": 0,
+    "noise": 2.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 3.5,
+    "res": 10.0,
+    "envPolarity": "N",
+    "env": 1.5,
+    "lfo": 2.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 3.0
+   },
+   "env": {
+    "attack": 3.0,
+    "decay": 0.0,
+    "sustain": 10.0,
+    "release": 1.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "74",
+   "name": "Effect Sound 3",
+   "transpose": 0,
+   "lfo": {
+    "rate": 5.5,
+    "delay": 4.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "E",
+    "pulse": false,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 1,
+   "vcf": {
+    "freq": 3.5,
+    "res": 10.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 2.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 5.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 4.0,
+    "sustain": 5.5,
+    "release": 7.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "75",
+   "name": "UFO",
+   "transpose": 12,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": false,
+    "sub": 0,
+    "noise": 2.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 0.0,
+    "res": 10.0,
+    "envPolarity": "N",
+    "env": 7.0,
+    "lfo": 4.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": -1.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 6.0,
+    "sustain": 10.0,
+    "release": 8.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "76",
+   "name": "Space Sound 3",
+   "transpose": 12,
+   "lfo": {
+    "rate": 6.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "M",
+    "pulse": false,
+    "saw": false,
+    "sub": 0,
+    "noise": 2.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 5.0,
+    "res": 10.0,
+    "envPolarity": "I",
+    "env": 4.0,
+    "lfo": 0.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 0.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 10.0,
+    "sustain": 0.0,
+    "release": 8.0
+   },
+   "chorus": 1
+  },
+  {
+   "program": "77",
+   "name": "Surf",
+   "transpose": 0,
+   "lfo": {
+    "rate": 0.0,
+    "delay": 0.0,
+    "trig": "A"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "E",
+    "pulse": false,
+    "saw": false,
+    "sub": 0,
+    "noise": 10.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 6.0,
+    "res": 0.0,
+    "envPolarity": "N",
+    "env": 0.0,
+    "lfo": 6.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 4.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 4.0,
+    "sustain": 10.0,
+    "release": 8.0
+   },
+   "chorus": 0
+  },
+  {
+   "program": "78",
+   "name": "Synthesizer Drum",
+   "transpose": 0,
+   "lfo": {
+    "rate": 0.0,
+    "delay": 0.0,
+    "trig": "M"
+   },
+   "dco": {
+    "lfo": 0.0,
+    "pwm": 0.0,
+    "pwmMode": "E",
+    "pulse": false,
+    "saw": false,
+    "sub": 0,
+    "noise": 0.0
+   },
+   "hpf": 0,
+   "vcf": {
+    "freq": 2.0,
+    "res": 10.0,
+    "envPolarity": "N",
+    "env": 4.0,
+    "lfo": 2.0,
+    "kybd": 10.0
+   },
+   "vca": {
+    "mode": "E",
+    "level": 1.0
+   },
+   "env": {
+    "attack": 0.0,
+    "decay": 5.0,
+    "sustain": 0.0,
+    "release": 6.0
+   },
+   "chorus": 0
+  }
+ ]
+}

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>microKORG XL Sequencer</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="sequencer.css">
+  <!-- These pages run inside index.html, which keeps both alive so playback never stops. -->
+  <script>if (top === self) location.replace('index.html' + location.search + '#sequencer');</script>
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <span class="brand-mark">XL</span>
+      <span class="brand-name">microKORG XL</span>
+      <nav class="app-nav" aria-label="Switch view">
+        <a href="index.html#editor" data-view="editor">Sound Editor</a>
+        <a href="index.html#sequencer" data-view="sequencer" aria-current="page">Sequencer</a>
+      </nav>
+    </div>
+    <div class="transport">
+      <button id="play" title="Play (Space)">▶ Play</button>
+      <button id="stop" title="Stop (Space)">■ Stop</button>
+      <button id="rec" title="Record (R): while playing, notes you play on the Keys in keyboard are added to the selected track's pattern">● Rec</button>
+    </div>
+    <span class="pos" id="pos">—</span>
+    <label class="field">BPM <input type="number" id="bpm" min="20" max="300"></label>
+    <label class="field">Swing <input type="range" id="swing" min="50" max="75"> <span id="swing-val"></span></label>
+    <label class="field" title="Dims notes outside the scale and snaps notes played on the keyboard into it">Scale
+      <select id="scale-root"></select>
+      <select id="scale-type"></select>
+    </label>
+    <span class="spacer"></span>
+    <label class="field" title="Notes played here go to the selected track: they fill in steps, set the note pool, or just play through">Keys in <select id="keys-in"></select>
+      <span id="keys-led" class="keys-led" title="Lights up when notes arrive from your keyboard">●</span><span id="keys-last" class="keys-last"></span></label>
+    <label class="field" title="Also send the keys you play to the selected track's output. Turn this off if your keyboard makes its own sound too (e.g. the XL with Local Control on)."><input type="checkbox" id="thru"> Thru</label>
+    <details class="dropdown" id="clock-out">
+      <summary class="field" title="Send MIDI clock and start/stop, so other gear (and the XL's arpeggiator) follows this tempo">Clock out <span id="clock-sum"></span></summary>
+      <div class="dropdown-body" id="clock-list"></div>
+    </details>
+    <span id="midi-status" class="status-pill">MIDI…</span>
+  </header>
+
+  <section class="filebar">
+    <input id="song-name" maxlength="60" spellcheck="false" autocomplete="off" aria-label="Song name">
+    <span id="dirty" class="dirty" hidden>unsaved</span>
+    <button id="save" class="accent" title="Save to data/sequences/ (⌘S)">Save</button>
+    <select id="open" title="Open a saved song"></select>
+    <button id="new" class="ghost">New</button>
+    <button id="delete" class="ghost" title="Move this song to data/sequences/deleted/">Delete</button>
+    <button id="export" class="ghost" title="Download the song (its sections, played once through) as a MIDI file with one track per sequencer track, e.g. to drag into Ableton Live">Export .mid</button>
+    <span class="spacer"></span>
+    <button id="undo" class="ghost small" title="Undo (⌘Z)">↶ Undo</button>
+    <button id="redo" class="ghost small" title="Redo (⇧⌘Z)">↷ Redo</button>
+  </section>
+
+  <main class="wrap">
+    <h2 class="section-head">
+      <button class="ghost collapse" id="song-col" title="Show or hide the song">▾</button> Song
+      <span class="seg-btn" id="mode">
+        <button data-m="loop" title="Each track loops its pattern; pattern buttons switch at the next bar">Loop patterns</button>
+        <button data-m="song" title="Play the song sections in order">Play song</button>
+      </span>
+      <span class="hint plain" id="song-sum"></span>
+    </h2>
+    <div class="song" id="song"></div>
+
+    <h2 class="section-head">
+      <button class="ghost collapse" id="cap-col" title="Show or hide captured playing">▾</button> Capture
+      <span class="hint plain" id="cap-sum"></span>
+    </h2>
+    <div class="capture" id="capture"></div>
+
+    <h2 class="section-head">Tracks
+      <button class="ghost small plain" id="collapse-all">Collapse all</button>
+      <label class="field plain" title="While playing, show the page and pattern that's playing"><input type="checkbox" id="follow"> Follow playhead</label>
+      <label class="field plain" title="Selecting an XL track (click it, or press 1–8) sends its sound to the XL, for quick switching while playing"><input type="checkbox" id="sound-follows"> XL sound follows selected track</label>
+    </h2>
+    <div id="tracks"></div>
+    <button class="ghost small" id="add-track">+ Add track</button>
+
+    <p class="help">
+      Click a step to edit it, double-click to turn it on or off, and drag a note's right edge to hold it longer.
+      Keys: <kbd>Space</kbd> play/stop, <kbd>←</kbd><kbd>→</kbd> move, <kbd>↑</kbd><kbd>↓</kbd> transpose (<kbd>⇧</kbd> octave),
+      <kbd>Enter</kbd> add a note, <kbd>⌫</kbd> delete, <kbd>Esc</kbd> close the editor, <kbd>1</kbd>–<kbd>8</kbd> select a track.
+      With the editor open and the sequencer stopped, notes played on your keyboard fill in the step, then move to the next one.
+    </p>
+  </main>
+
+  <div id="toasts" class="toasts"></div>
+  <script type="module" src="js/seq/ui.js"></script>
+</body>
+</html>
