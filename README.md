@@ -1,19 +1,21 @@
-# microKORG XL Editor
+# Ostinato
 
-A browser-based sound editor for the Korg microKORG XL. It replaces Korg's old Sound Editor, which no longer runs on current macOS. It talks to the synth over USB using the SysEx protocol in Korg's official *microKORG XL MIDI Implementation*.
+Instruments, sequencer and recorder, in the browser. Build your own instruments in the **Lab**, write and loop patterns in the **Sequencer** (with AI ideas, chance, ratchets and controller lanes), and keep everything you play in the **Recorder**, including audio from an interface such as a Focusrite Scarlett. It runs on this Mac with a small local server, or as a [travel version](#travel-version-no-server-works-offline) on any computer with Chrome or Edge.
+
+It began as a replacement for Korg's old Sound Editor for the **microKORG XL**, which no longer runs on current macOS, and the XL is still supported in depth: a full sound editor, an AI sound designer, factory and converted preset libraries, and XL tracks in the sequencer. It talks to the synth over USB using the SysEx protocol in Korg's official *microKORG XL MIDI Implementation*.
 
 ## Start it
 
 0. Install [uv](https://docs.astral.sh/uv/) once (`brew install uv`). It fetches the right Python and the AI packages automatically the first time the editor starts. Without it, the editor still runs on the Mac's own Python, with Claude Code as the only AI option.
 1. Connect the microKORG XL by USB.
-2. Double-click **`Start Editor.command`**. It serves the page on `http://localhost:8765` and opens it in Chrome (or Edge). Closing its Terminal window (or Ctrl-C) stops the editor. If an editor is already running, even an older version left behind, it's replaced, so starting again is always safe. **`Stop Editor.command`** stops it without the window.
+2. Double-click **`Start Ostinato.command`**. It serves the page on `http://localhost:8765` and opens it in Chrome (or Edge). Closing its Terminal window (or Ctrl-C) stops the editor. If an editor is already running, even an older version left behind, it's replaced, so starting again is always safe. **`Stop Ostinato.command`** stops it without the window.
    - From Terminal instead: `uv run serve.py` (or `python3 serve.py`) in the project folder, then open http://localhost:8765; Ctrl-C stops it. `MKXL_PORT` picks another port and `MKXL_DATA` another data folder.
    - If macOS blocks it the first time, right-click the file, choose **Open**, then confirm.
    - Safari isn't supported because it has no Web MIDI.
 3. Allow MIDI/SysEx access when the browser asks.
 4. On the synth, set **GLOBAL › MIDI Filter › SystemEx** to Enable. Also enable **ProgChg** if you want the editor to follow program changes made on the synth.
 
-**Korg's factory sounds** aren't included in the public copy of this project, since they're Korg's to share. Download Korg's microKORG XL software (the Sound Editor/Librarian package) from Korg's website and copy its factory preset files (`.mkxl_all`) into the `presets/` folder; they then appear in the Presets tab. Converted libraries made by this project (Prophet-5, Juno-60, Polysix) are included. Korg's *MIDI Implementation* document, used only to regenerate `js/fxdata.js`, is also on Korg's site.
+**Korg's factory sounds** aren't included in the public copy of this project, since they're Korg's to share. Download Korg's microKORG XL software (the Sound Editor/Librarian package) from Korg's website and copy its factory preset files (`.mkxl_all`) into the `presets/` folder; they then appear in the Presets tab. Converted libraries made by this project (Prophet-5, Juno-60, Polysix) are included. Korg's *MIDI Implementation* document, used only to regenerate `js/xl/fxdata.js`, is also on Korg's site.
 
 The editor finds the synth automatically and loads the current program. The XL appears as four MIDI ports: **KBD/KNOB** and **SOUND** are the synth; **MIDI IN/OUT** are just its 5-pin sockets. **Find synth** picks the right pair for you. The **Help** tab inside the app covers the rest.
 
@@ -37,16 +39,16 @@ The editor finds the synth automatically and loads the current program. The XL a
 - **My Sounds:** **Add to My Sounds** keeps any sound (an AI design or your own tweak) in a collection on this computer (`data/my-sounds/`, one `.syx` per sound). It shows as the first bank in Presets, the AI can use it as a reference, and removed sounds go to `data/my-sounds/deleted/`. **Export My Sounds as .syx** saves the whole collection as one file; **Import .syx into My Sounds** adds every sound from a file.
 - **Recent designs:** every AI request and its results are saved in `data/ai-designs/` (one `.json` per request), even if the page is closed while it runs. The AI tab lists the latest; click one to load it. **✕** removes one from the list (marked in its file); **Removed** at the bottom brings it back. **Add to My Sounds** puts a sound in Presets.
 - **Library:** reads all 128 programs, saves them as a single `.syx` backup, and can write a bank back.
-- Opens `.syx` files and Korg Sound Editor files (`.mkxl_all`), and saves `.syx`, with or without the synth connected. Patches for the original microKORG use a different engine and can't be loaded.
+- Opens `.syx` files and files from Korg's Sound Editor (`.mkxl_all`), and saves `.syx`, with or without the synth connected. Patches for the original microKORG use a different engine and can't be loaded.
 - Lets you audition sounds with an on-screen keyboard, or with the computer keys `A`–`K`.
 
 ## Sequencer
 
-Switch between **Sound Editor** and **Sequencer** at the top of either page (or open http://localhost:8765/#sequencer). Both stay running, so the sequencer keeps playing while you edit sounds. It plays patterns to the XL, your other MIDI gear, or a built-in test sound on the computer.
+Switch between **microKORG XL**, **Sequencer** and **Lab** at the top of any page (or open http://localhost:8765/#sequencer). All stay running, so the sequencer keeps playing while you edit sounds. It plays patterns to the XL, your other MIDI gear, or a built-in test sound on the computer.
 
 - **Tracks** (up to 8): each has its own output and MIDI channel, four patterns (A–D), a step rate (1/32 to 1/4, including triplets), mute (M) and solo (S), and a **Vol** slider. For the computer sound it sets the track's loudness (100 is normal; above that boosts up to 4×); for MIDI gear it sends MIDI Volume (CC 7) when you move it, and at Play if it isn't at the default 100. Choose **Computer (test sound)** as the output to hear a track without any instruments connected; its **Sound** can be Bass, Pluck, Pad, Keys or **Drums** (a synthesised kit on the standard General MIDI drum notes, so library drum patterns play on it). Drum tracks show drum names (Kick, Snare, Hat…) on their steps.
 - **Drum tracks** (named like "Drums", or using the Drums sound) show a drum-machine grid instead: one row per drum, one column per step. Click or drag along a row to add or remove hits, ⇧-click a hit to accent it, click a drum's name to hear it, and **+ Add a drum** for more rows. Click a step number to open that step in the editor, which shows a kit of pads instead of a keyboard. Drums hitting on the same step share its velocity.
-- **Sounds:** a track playing the XL (its SOUND port) remembers an XL sound, shown on its **🎛** button. When playback starts, a track with no sound yet takes the one in the Sound Editor, and its sound is sent to the XL. Click 🎛 to send the sound and open it in the Sound Editor; edits you make there (or sounds you pick from Presets, or programs you change on the synth) are remembered for that track, and saved with the song. The XL plays one sound at a time, so with several XL tracks the one you last sent wins. With **XL sound follows selected track** (on by default), selecting a track (click it, or press 1–8) switches the XL to that track's sound, for quick switching while playing. Tracks on other gear have a **Prog** menu: a Program Change sent when playback starts and when you change it.
+- **Sounds:** a track playing the XL (its SOUND port) remembers an XL sound, shown on its **🎛** button. When playback starts, a track with no sound yet takes the one in the microKORG XL editor, and its sound is sent to the XL. Click 🎛 to send the sound and open it in the microKORG XL editor; edits you make there (or sounds you pick from Presets, or programs you change on the synth) are remembered for that track, and saved with the song. The XL plays one sound at a time, so with several XL tracks the one you last sent wins. With **XL sound follows selected track** (on by default), selecting a track (click it, or press 1–8) switches the XL to that track's sound, for quick switching while playing. Tracks on other gear have a **Prog** menu: a Program Change sent when playback starts and when you change it.
 - **Browse** (next to an XL track's 🎛 button): try other XL sounds on the track while the song plays. It lists the sounds that suit the track's role (bass sounds for a bass track, and so on; choose Type: All for everything) from My Sounds and every bank in `presets/`. Click a sound, or step through the list with ↑ ↓, and it's sent to the XL at once. Nothing changes until **Use for …**; closing the browser or **Back** puts the track's own sound back.
 - **Steps:** any pattern length from 1 to 64. Up to 32 steps fit on one page; longer patterns page in 32s. Each note has its own notes (several make a chord), velocity, gate, and how many steps it's held for. Drag a note's right edge to hold it longer.
 - **Chance and ratchet** (in the step editor): **Chance** below 100% leaves a step out at random, so a loop changes a little each time round; such notes have a dashed outline. **Ratchet** repeats the note 2–4 times across its length, for rolls and stutters. Both show as small badges on the note.
@@ -114,22 +116,22 @@ Back up first: go to **Library › Read all from synth › Save bank .syx**.
 
 | Path | Purpose |
 |---|---|
-| `Start Editor.command`, `serve.py` | Launcher and local server (static files, preset list, AI Designer bridge to Claude Code) |
-| `index.html` | Hosts the editor and the sequencer together, so switching between them never stops playback |
-| `editor.html`, `style.css`, `js/app.js` | The editor UI |
-| `js/korgfile.js` | Reader for Korg Sound Editor files (`.mkxl_all`) |
-| `js/aiparams.js` | Readable parameter values for the AI, and applying its answers |
+| `Start Ostinato.command`, `Stop Ostinato.command`, `serve.py` | Launcher, stopper and local server (static files, saving to `data/`, preset list, AI bridge) |
+| `index.html` | Hosts the pages together (and the Recorder panel), so switching between them never stops playback |
+| `sequencer.html`, `sequencer.css`, `js/seq/` | The Sequencer: data model, timing engine, test synth, capture logic, MIDI files and page |
+| `lab.html`, `lab.css`, `js/lab/` | The Lab: instrument format, Web Audio engine, patch diagram and page |
+| `recorder.html`, `recorder.css`, `js/rec/` | The Recorder panel: takes and audio recording |
+| `js/core/` | Shared by every page: home/travel mode, storage, Transfer, top-bar buttons, devices, MIDI port names |
+| `sw.js` | Offline support for the travel version |
+| `editor.html`, `style.css`, `js/xl/` | The microKORG XL device: its editor page and everything XL-specific |
+| `js/xl/sysex.js`, `js/xl/params.js`, `js/xl/fxdata.js` | XL SysEx messages, parameter map, and effect definitions (generated from the spec by `tools/gen_fxdata.py`) |
+| `js/xl/korgfile.js`, `js/xl/aiparams.js` | Reading Korg Sound Editor files (`.mkxl_all`); readable XL parameter values for the AI |
 | `tools/build_ai_reference.mjs` | Builds `ai/` (AI instructions, preset index, preset settings); `serve.py` reruns it when presets change |
-| `js/sysex.js` | SysEx message building/parsing and Korg's 7-bit data packing |
-| `js/params.js` | Parameter map: byte offsets, bit fields, value display, Parameter Change IDs |
-| `js/fxdata.js` | Effect definitions, generated from the spec by `tools/gen_fxdata.py` |
-| `tools/selftest.mjs` | Offline checks: `node tools/selftest.mjs` |
-| `tools/fakesynth.js` | Simulated synth for testing without hardware: open `http://localhost:8765/?sim` |
-| `sequencer.html`, `sequencer.css`, `js/seq/` | The sequencer: data model, timing engine, test synth and page |
-| `tools/seqtest.mjs` | Sequencer checks (run by `selftest.mjs`) |
 | `ai_providers.py` | The AI providers (Claude Code, Anthropic API, OpenAI-compatible), AI settings and the preset tools |
-| `tools/providertest.py` | Offline checks for the AI providers: `python3 tools/providertest.py` |
 | `tools/pattern_prompt.md` | The AI's instructions for sequencer patterns (sound design's are generated into `ai/system.md`) |
+| `tools/selftest.mjs` | Offline checks (runs the sequencer, Lab and Recorder checks too): `node tools/selftest.mjs`; `python3 tools/providertest.py` for the AI providers |
+| `tools/fakesynth.js` | Simulated synth for testing without hardware: open `http://localhost:8765/?sim` |
+| `tools/publish.sh` | Publishes the app to the public GitHub repo (without files that aren't ours to share) |
 
 ## Known unknowns
 

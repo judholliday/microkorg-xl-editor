@@ -52,7 +52,7 @@ PROVIDERS = {
     'openai': 'OpenAI-compatible (OpenAI, Gemini, OpenRouter, Ollama, LM Studio…)',
 }
 NEEDS_PACKAGES = ('The {} provider needs the official Python packages, which need Python 3.10 or newer. '
-                  'Start the editor with Start Editor.command (it uses uv to install them), or run: uv run serve.py')
+                  'Start the editor with Start Ostinato.command (it uses uv to install them), or run: uv run serve.py')
 
 
 # ---- settings ----------------------------------------------------------------------------------

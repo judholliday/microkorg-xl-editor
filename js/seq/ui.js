@@ -241,7 +241,7 @@ function sendDeviceSound(t, data) {
 
 // The editor runs alongside (index.html) and tells us what sound it holds; we send it sounds to edit.
 const soundChannel = 'BroadcastChannel' in window ? new BroadcastChannel('mkxl') : null;
-let editorSound = null; // { name, data } in the Sound Editor now
+let editorSound = null; // { name, data } in the microKORG XL editor now
 let liveSound = null; // the track whose sound is on the XL now: edits in the editor are saved to it
 const sameSound = (a, b) => !!a && !!b && a.data.length === b.data.length && a.data.every((x, i) => x === b.data[i]);
 
@@ -527,7 +527,7 @@ function wireInputs() {
       const d = e.data;
       if ((d[0] & 0xf0) === 0x90 && d[2] > 0) noteSeen(input, d[1]);
       if (input.name !== prefs.keysIn) return;
-      // Only while the sequencer is on screen: keys played while auditioning in the Sound Editor
+      // Only while the sequencer is on screen: keys played while auditioning in the microKORG XL editor
       // shouldn't fill in steps behind your back.
       if (onScreen()) onKeys(d, e.timeStamp);
     });
@@ -611,7 +611,7 @@ function renderFileBar() {
   $('#delete').disabled = !fileName;
   $('#undo').disabled = !undoStack.length;
   $('#redo').disabled = !redoStack.length;
-  document.title = `${song.name}${dirty ? ' •' : ''} · XL Sequencer`;
+  document.title = `${song.name}${dirty ? ' •' : ''} · Ostinato`;
 }
 
 function renderSong() {
@@ -731,8 +731,8 @@ function headHTML(ti) {
         ? `<label class="field" title="A built-in test sound, or an instrument you built in the Lab">Sound <select data-act="voice">${soundOptions(t)}</select></label>`
         : `<label class="field">Ch <select data-act="ch">${options(Array.from({ length: 16 }, (_, c) => [c + 1, c + 1]), t.ch)}</select></label>`}
       ${isXLOut(t.out) ? `<button class="ghost sound-btn${liveSound === ti ? ' live' : ''}" data-act="sound" title="${t.sound
-          ? 'This track\'s XL sound, sent to the XL when playback starts. Click to send it now and edit it in the Sound Editor; your edits there are remembered.'
-          : `Remember the sound the Sound Editor has now${editorSound ? ` (${esc(editorSound.name)})` : ''}`}">🎛 ${t.sound ? esc(t.sound.name || 'Sound') : `Use ${editorSound ? `“${esc(editorSound.name)}”` : 'editor sound'}`}</button>
+          ? 'This track\'s XL sound, sent to the XL when playback starts. Click to send it now and edit it in the microKORG XL editor; your edits there are remembered.'
+          : `Remember the sound the microKORG XL editor has now${editorSound ? ` (${esc(editorSound.name)})` : ''}`}">🎛 ${t.sound ? esc(t.sound.name || 'Sound') : `Use ${editorSound ? `“${esc(editorSound.name)}”` : 'editor sound'}`}</button>
         <button class="${v.snd.open ? 'on' : 'ghost'} small" data-act="snd" title="Try other XL sounds on this track while it plays">Browse</button>`
         : t.out !== M.COMPUTER ? `<label class="field" title="Program Change sent to this instrument when playback starts (and when you change it)">Prog
           <select data-act="prog"><option value="">—</option>${Array.from({ length: 128 }, (_, n) => `<option value="${n}" ${t.program === n ? 'selected' : ''}>${n + 1}</option>`).join('')}</select></label>` : ''}
@@ -1293,7 +1293,7 @@ function checkAiStatus() {
   if (STATIC) { aiProblem = 'The AI isn\'t available in the travel version: it needs the editor\'s server at home.'; return; }
   fetch('api/status').then(r => r.json()).then(j => {
     aiAvailable = !!j.ai;
-    aiProblem = j.ai ? '' : `${j.problem} (AI settings are in the Sound Editor's AI Designer tab.)`;
+    aiProblem = j.ai ? '' : `${j.problem} (AI settings are in the microKORG XL editor's AI Designer tab.)`;
     renderTracks();
   }).catch(() => { aiProblem = 'The editor’s server isn’t running.'; });
 }
@@ -1671,7 +1671,7 @@ $('#tracks').addEventListener('click', e => {
     case 'p-clear': edit(ti, () => { t.pool.notes = []; }); break;
     case 'ai':
       v.ai.open = !v.ai.open;
-      if (v.ai.open) checkAiStatus(); // the provider may have changed in the Sound Editor
+      if (v.ai.open) checkAiStatus(); // the provider may have changed in the microKORG XL editor
       renderTrack(ti);
       if (v.ai.open) document.querySelector(`#trk-${ti} .ai-msg`)?.focus();
       break;
@@ -1689,8 +1689,8 @@ $('#tracks').addEventListener('click', e => {
         liveSound = ti;
         changed();
         renderTracks();
-        toast(`${t.name} now uses ${t.sound.name || 'this sound'}. Changes you make in the Sound Editor are remembered for this track.`, 'ok');
-      } else toast('Open a sound in the Sound Editor first.');
+        toast(`${t.name} now uses ${t.sound.name || 'this sound'}. Changes you make in the microKORG XL editor are remembered for this track.`, 'ok');
+      } else toast('Open a sound in the microKORG XL editor first.');
       break;
     case 'lib':
       v.lib.open = !v.lib.open;
@@ -1710,7 +1710,7 @@ $('#tracks').addEventListener('click', e => {
       v.snd.trying = null;
       v.snd.open = false;
       changed();
-      sendSound(ti); // also shows it in the Sound Editor, where edits are kept for this track
+      sendSound(ti); // also shows it in the microKORG XL editor, where edits are kept for this track
       toast(`${t.name} now uses ${t.sound.name}.`, 'ok');
       break;
     }

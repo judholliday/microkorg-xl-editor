@@ -1,5 +1,5 @@
 // Every sound the editor knows (the files in presets/ and My Sounds), each with its sound type, for
-// pages other than the Sound Editor (the sequencer's sound browser). The editor's Presets tab has
+// pages other than the microKORG XL editor (the sequencer's sound browser). The editor's Presets tab has
 // its own fuller version of this (type editing, grouping).
 import { parse, splitSysex } from './sysex.js';
 import { programName } from './params.js';

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>microKORG XL</title>
+  <title>Ostinato</title>
   <style>
     :root { --bg: #141416; color-scheme: dark; }
     @media (prefers-color-scheme: light) { :root { --bg: #ecebe7; color-scheme: light; } }
@@ -18,11 +18,11 @@
 </head>
 <body>
   <!--
-    Hosts the Sound Editor, the Sequencer and the Lab together and shows one at a time. Both stay loaded,
+    Hosts the microKORG XL editor, the Sequencer and the Lab together and shows one at a time. Both stay loaded,
     so the sequencer keeps playing (and the editor keeps following the synth) while you switch.
     The pages ask to switch with postMessage({ type: 'switch-view', view }).
   -->
-  <iframe id="editor" title="Sound Editor" allow="midi"></iframe>
+  <iframe id="editor" title="microKORG XL editor" allow="midi"></iframe>
   <iframe id="sequencer" title="Sequencer" allow="midi" hidden></iframe>
   <iframe id="lab" title="Lab" allow="midi" hidden></iframe>
   <iframe id="recorder" title="Recorder" allow="midi; microphone" hidden></iframe>
@@ -66,7 +66,7 @@
 
     // The tab shows the visible page's title (e.g. the song name and its unsaved mark).
     function syncTitle() {
-      try { document.title = frames[current].contentDocument.title || 'microKORG XL'; } catch { /* still loading */ }
+      try { document.title = frames[current].contentDocument.title || 'Ostinato'; } catch { /* still loading */ }
     }
     setInterval(syncTitle, 1000);
 

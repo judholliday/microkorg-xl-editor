@@ -1,5 +1,5 @@
 #!/bin/bash
-# Double-click to start the microKORG XL Editor (needs Chrome or Edge for Web MIDI).
+# Double-click to start the Ostinato (needs Chrome or Edge for Web MIDI).
 # Closing this window (or Ctrl-C) stops it. An older editor still running (left behind by a crash,
 # or from before an update) is stopped first, so the page always talks to the current code.
 cd "$(dirname "$0")"
@@ -27,7 +27,7 @@ if [ -n "$OLD" ]; then
     for _ in $(seq 1 20); do lsof -iTCP:$PORT -sTCP:LISTEN >/dev/null 2>&1 || break; sleep 0.25; done
   else
     echo "Port $PORT is in use by another program ($(ps -o comm= -p "$OLD")), so the editor can't start."
-    echo "Quit that program, or start the editor on another port: MKXL_PORT=8770 ./\"Start Editor.command\""
+    echo "Quit that program, or start the editor on another port: MKXL_PORT=8770 ./\"Start Ostinato.command\""
     exit 1
   fi
 fi

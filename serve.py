@@ -3,9 +3,9 @@
 # requires-python = ">=3.10"
 # dependencies = ["anthropic>=1.11,<2", "openai>=3,<4"]
 # ///
-"""Local server for the microKORG XL Editor.
+"""Local server for the Ostinato.
 
-Start it with `uv run serve.py` (Start Editor.command does this): uv installs the Python and the
+Start it with `uv run serve.py` (Start Ostinato.command does this): uv installs the Python and the
 packages listed above, which the API AI providers need. `python3 serve.py` works too, with Claude
 Code as the only AI provider.
 
@@ -230,7 +230,7 @@ def commit_data_now(message):
     if data_git('diff', '--cached', '--quiet').returncode == 0:
         return  # nothing changed
     ident = [] if data_git('config', 'user.email').stdout.strip() else [
-        '-c', 'user.name=microKORG XL Editor', '-c', 'user.email=editor@localhost']
+        '-c', 'user.name=Ostinato', '-c', 'user.email=editor@localhost']
     r = subprocess.run(['git', '-C', str(DATA), *ident, 'commit', '-q', '-m', message], capture_output=True, text=True)
     if r.returncode:
         sys.stderr.write(f'Committing the data folder failed: {r.stderr.strip()}\n')
@@ -973,7 +973,7 @@ def main():
     init_data()
     push_data()  # catch up on anything saved while offline
     server = ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
-    print(f'microKORG XL Editor: http://localhost:{PORT}/')
+    print(f'Ostinato: http://localhost:{PORT}/')
     ready, problem = providers.available()
     print(f'AI: {providers.provider_label()}' + ('' if ready else f' (not ready: {problem})'))
     try:

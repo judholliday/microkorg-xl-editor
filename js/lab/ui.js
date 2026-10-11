@@ -140,7 +140,7 @@ function renderFileBar() {
   $('#redo').disabled = !redoStack.length;
   if (document.activeElement !== $('#voices')) $('#voices').value = patch.voices;
   $('#volume').value = patch.volume;
-  document.title = `${patch.name}${dirty ? ' •' : ''} · Lab`;
+  document.title = `${patch.name}${dirty ? ' •' : ''} · Lab · Ostinato`;
 }
 
 function renderOpen() {

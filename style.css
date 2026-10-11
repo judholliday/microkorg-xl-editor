@@ -97,7 +97,7 @@ kbd {
 }
 .brand-name { font-weight: 600; }
 
-/* Switches between the Sound Editor and Sequencer pages; same place on both. */
+/* Switches between the microKORG XL editor and Sequencer pages; same place on both. */
 .app-nav { display: inline-flex; gap: 2px; margin-left: 8px; padding: 2px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; }
 .app-nav a { padding: 4px 12px; border-radius: 6px; color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; white-space: nowrap; }
 .app-nav a:hover { color: var(--text); }

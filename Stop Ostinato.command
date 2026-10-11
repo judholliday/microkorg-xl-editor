@@ -1,6 +1,6 @@
 #!/bin/bash
-# Double-click to stop the microKORG XL Editor, e.g. if its Terminal window was closed but the
-# page still answers. (Closing the Start Editor window normally stops it.)
+# Double-click to stop the Ostinato, e.g. if its Terminal window was closed but the
+# page still answers. (Closing the Start Ostinato window normally stops it.)
 PORT=${MKXL_PORT:-8765}
 PID=$(lsof -tiTCP:$PORT -sTCP:LISTEN 2>/dev/null | head -1)
 if [ -z "$PID" ]; then echo "The editor isn't running."; exit 0; fi

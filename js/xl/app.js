@@ -1097,11 +1097,11 @@ function renderPresets() {
   if (presets.status === 'unavailable') {
     const retry = h('button', { class: 'ghost small', onclick: () => { presets.status = 'idle'; presets.banks = []; render(); } }, 'Try again');
     if (presets.problem === 'server') {
-      return [h('p', { class: 'view-note' }, 'The editor\'s server isn\'t answering. Start it with ', h('strong', {}, 'Start Editor.command'), ', then ', retry)];
+      return [h('p', { class: 'view-note' }, 'The editor\'s server isn\'t answering. Start it with ', h('strong', {}, 'Start Ostinato.command'), ', then ', retry)];
     }
     if (presets.problem === 'old') {
       return [h('p', { class: 'view-note' }, 'The server answering isn\'t this version of the editor (an older copy still running, or another web server). Double-click ',
-        h('strong', {}, 'Start Editor.command'), ': it replaces an old editor. Then ', retry)];
+        h('strong', {}, 'Start Ostinato.command'), ': it replaces an old editor. Then ', retry)];
     }
     return [h('p', { class: 'view-note' }, `Couldn't load the presets: ${presets.problem}. `, retry)];
   }
@@ -1392,7 +1392,7 @@ function aiSettingsPanel() {
       h('button', { class: 'tile-btn', 'aria-label': 'Close', onclick: () => { aiSet.open = false; render(); } }, '×')),
     h('div', { class: 'set-providers' }, s.providers.map(p => h('label', { class: `set-provider${d.provider === p.id ? ' on' : ''}` },
       h('input', { type: 'radio', name: 'ai-provider', checked: d.provider === p.id, onchange: () => { d.provider = p.id; aiSet.message = ''; render(); } }), p.label))),
-    needsPackages ? h('p', { class: 'set-warn' }, 'This provider needs the editor to be started with uv (Start Editor.command does this; install uv with: brew install uv).') : null,
+    needsPackages ? h('p', { class: 'set-warn' }, 'This provider needs the editor to be started with uv (Start Ostinato.command does this; install uv with: brew install uv).') : null,
     ...details,
     h('div', { class: 'set-row' },
       h('button', { class: 'accent', disabled: aiSet.saving, onclick: saveAiSettings }, aiSet.saving ? 'Saving…' : 'Save'),
@@ -1464,7 +1464,7 @@ async function runDesign() {
   }
 }
 
-const SERVER_DOWN = 'The editor\'s server isn\'t running. Double-click Start Editor.command, leave its Terminal window open, then try again.';
+const SERVER_DOWN = 'The editor\'s server isn\'t running. Double-click Start Ostinato.command, leave its Terminal window open, then try again.';
 
 function handleAiEvent(entry, ev) {
   if (ev.type === 'step' || ev.type === 'note') {
