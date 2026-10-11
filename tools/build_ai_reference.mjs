@@ -6,11 +6,11 @@
 
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
-import { parseKorgEditorFile, isKorgEditorFile } from '../js/korgfile.js';
-import { splitSysex, parse } from '../js/sysex.js';
-import { initProgram, programName } from '../js/params.js';
-import { programToAi, parameterReference } from '../js/aiparams.js';
-import { soundType } from '../js/soundtype.js';
+import { parseKorgEditorFile, isKorgEditorFile } from '../js/xl/korgfile.js';
+import { splitSysex, parse } from '../js/xl/sysex.js';
+import { initProgram, programName } from '../js/xl/params.js';
+import { programToAi, parameterReference } from '../js/xl/aiparams.js';
+import { soundType } from '../js/xl/soundtype.js';
 
 const root = new URL('../', import.meta.url);
 const presetDir = new URL('presets/', root);

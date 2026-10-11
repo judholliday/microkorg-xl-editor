@@ -7,7 +7,8 @@ import {
 import { isKorgEditorFile, parseKorgEditorFile } from './korgfile.js';
 import { programToAi, applyAiChanges, aiParams, toAi } from './aiparams.js';
 import { soundType, TYPES } from './soundtype.js';
-import { isKorg, portLabel, looksLikeSynthIn, looksLikeSynthOut } from './midiports.js';
+import { portLabel } from '../core/midiports.js';
+import { isKorg, looksLikeSynthIn, looksLikeSynthOut } from './ports.js';
 
 // ---------------------------------------------------------------------------------------------
 // State
@@ -312,7 +313,7 @@ function setStatus(text, kind = '') {
 }
 
 async function initMidi() {
-  if (new URLSearchParams(location.search).has('sim')) await import('../tools/fakesynth.js');
+  if (new URLSearchParams(location.search).has('sim')) await import('../../tools/fakesynth.js');
   if (!navigator.requestMIDIAccess) {
     setStatus('No Web MIDI — use Chrome or Edge', 'err');
     return;
@@ -1006,8 +1007,12 @@ async function loadPresetBanks() {
     }
     await loadMySounds();
     presets.status = 'ready';
-  } catch {
+  } catch (err) {
+    // Tell apart "no server" (a failed request, or a 404 from a plain web server or an old copy
+    // of the editor) from a problem reading the files.
     presets.status = 'unavailable';
+    presets.problem = err instanceof TypeError ? 'server' : /^(404|501)$/.test(err.message) ? 'old' : err.message || String(err);
+    console.error('Loading presets failed:', err);
   }
   if (state.tab === 'presets' || state.tab === 'ai') render();
 }
@@ -1090,8 +1095,15 @@ function renderPresets() {
     return [h('p', { class: 'view-note' }, 'Loading presets…')];
   }
   if (presets.status === 'unavailable') {
-    return [h('p', { class: 'view-note' }, 'Presets need the editor\'s own server. Start the editor with ',
-      h('strong', {}, 'Start Editor.command'), ' rather than another web server.')];
+    const retry = h('button', { class: 'ghost small', onclick: () => { presets.status = 'idle'; presets.banks = []; render(); } }, 'Try again');
+    if (presets.problem === 'server') {
+      return [h('p', { class: 'view-note' }, 'The editor\'s server isn\'t answering. Start it with ', h('strong', {}, 'Start Editor.command'), ', then ', retry)];
+    }
+    if (presets.problem === 'old') {
+      return [h('p', { class: 'view-note' }, 'The server answering isn\'t this version of the editor (an older copy still running, or another web server). Double-click ',
+        h('strong', {}, 'Start Editor.command'), ': it replaces an old editor. Then ', retry)];
+    }
+    return [h('p', { class: 'view-note' }, `Couldn't load the presets: ${presets.problem}. `, retry)];
   }
   if (!presets.banks.length) {
     return [h('p', { class: 'view-note' }, 'No presets found. Put .mkxl_all or .syx files in the project\'s ', h('strong', {}, 'presets'), ' folder and reload.')];

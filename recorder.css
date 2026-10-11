@@ -1,0 +1,39 @@
+/* The Recorder panel (recorder.html), shown by index.html over the right side of the window. */
+body { padding-bottom: 24px; border-left: 0; }
+.rec-head { position: sticky; top: 0; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
+.rec-title { font-size: 15px; }
+.rec-title, .rec-go:not(.on) { color: var(--err); }
+.rec-head .spacer { flex: 1; }
+.rec-head select { max-width: 170px; }
+.rec-section { padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.rec-section h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 4px 0 8px; }
+.rec-section h2 .hint { text-transform: none; letter-spacing: 0; }
+.perf-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 8px 0 4px; }
+.rec-go { font-weight: 700; min-width: 96px; }
+.rec-go.on { background: var(--err); border-color: var(--err); color: #fff; }
+
+.takes { display: flex; flex-direction: column; gap: 8px; }
+.takes .take { display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.takes .take.live { border-color: var(--err); }
+.takes .take.perf { border-left: 3px solid var(--err); }
+.take-top { display: flex; align-items: center; gap: 8px; }
+.takes .roll { flex: 1 1 0; min-width: 0; width: 0; height: 34px; }
+.takes .take-info { display: block; min-width: 0; font-size: 13px; }
+.take-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.take-actions .spacer { flex: 1; }
+.takes > .hint { display: flex; align-items: center; gap: 10px; }
+
+/* audio */
+.audio-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 6px 0; }
+.audio-row .spacer { flex: 1; }
+.audio-row select { max-width: 220px; }
+.meter { flex: 1; min-width: 160px; height: 10px; border-radius: 5px; background: var(--panel-2); border: 1px solid var(--line); position: relative; overflow: hidden; }
+.meter i { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--ok); transition: width .05s linear; }
+.meter.clip { box-shadow: 0 0 0 2px var(--err); }
+.sub { font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 14px 0 6px; }
+.sub .hint { text-transform: none; letter-spacing: 0; }
+.recordings { display: flex; flex-direction: column; gap: 6px; }
+.recording { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); font-size: 13px; }
+.recording .rname { font-weight: 600; flex: 1; min-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.recording audio { width: 100%; height: 32px; }
+.recording a { color: var(--text); }

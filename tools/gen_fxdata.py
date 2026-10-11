@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Generate js/fxdata.js from Korg's microKORG XL MIDI Implementation text.
+"""Generate js/xl/fxdata.js from Korg's microKORG XL MIDI Implementation text.
 
 Parses the "EFFECT PARAMETER STRUCTURE" section and the *T08-xx lookup
 tables so the 17 effect types don't have to be transcribed by hand.
 
-Usage: python3 tools/gen_fxdata.py docs/microKORG_XL_MIDIimp.txt > js/fxdata.js
+Usage: python3 tools/gen_fxdata.py docs/microKORG_XL_MIDIimp.txt > js/xl/fxdata.js
 """
 import json
 import re

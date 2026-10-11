@@ -7,10 +7,10 @@
 // envelope's sustain, or its peak for sounds that don't sustain), then amp level and EG2 sustain.
 // Result in dB, 0 = one full-level saw through an open filter at full amp level.
 import { readFileSync, readdirSync } from 'node:fs';
-import { parseKorgEditorFile } from '../js/korgfile.js';
-import { splitSysex, parse } from '../js/sysex.js';
-import { initProgram } from '../js/params.js';
-import { programToAi, applyAiChanges } from '../js/aiparams.js';
+import { parseKorgEditorFile } from '../js/xl/korgfile.js';
+import { splitSysex, parse } from '../js/xl/sysex.js';
+import { initProgram } from '../js/xl/params.js';
+import { programToAi, applyAiChanges } from '../js/xl/aiparams.js';
 import { XL_CUTOFF, root } from './xlunits.mjs';
 
 const hzAt = v => {

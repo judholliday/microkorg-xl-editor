@@ -2,9 +2,9 @@
 // (docs/xl-measurements.json, made with tools/calibrate.py), plus helpers for writing a preset
 // bank. Shared by the converters that turn other synths' patches into XL programs.
 import { readFileSync, writeFileSync } from 'node:fs';
-import { initProgram } from '../js/params.js';
-import { applyAiChanges } from '../js/aiparams.js';
-import { msg } from '../js/sysex.js';
+import { initProgram } from '../js/xl/params.js';
+import { applyAiChanges } from '../js/xl/aiparams.js';
+import { msg } from '../js/xl/sysex.js';
 
 export const root = new URL('../', import.meta.url);
 const M = JSON.parse(readFileSync(new URL('docs/xl-measurements.json', root), 'utf8'));

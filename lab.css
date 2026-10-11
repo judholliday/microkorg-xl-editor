@@ -1,0 +1,77 @@
+/* The Lab page (lab.html). Shares style.css and sequencer.css (top bar, file bar, keyboard). */
+.lab-notes { margin: 0 0 10px; padding: 8px 12px; border: 1px solid var(--warn); border-radius: 8px; color: var(--warn); font-size: 13px; }
+.modules { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; align-items: start; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 8px 10px 10px; display: flex; flex-direction: column; gap: 6px; }
+.card.global { border-style: dashed; }
+.card header { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: help; }
+.card header .spacer { flex: 1; }
+.card .mid { font: 11px var(--mono); color: var(--muted); }
+.card .tag { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
+.card button.x { padding: 0 6px; font-size: 11px; line-height: 18px; }
+.mod-osc header b, .mod-noise header b { color: var(--accent); }
+.mod-env header b, .mod-lfo header b { color: #6aa9ff; }
+
+.prms { display: flex; flex-direction: column; gap: 3px; }
+.prm { display: grid; grid-template-columns: 82px 1fr 62px auto; align-items: center; gap: 6px; font-size: 12px; border-radius: 5px; padding: 1px 2px; }
+.prm label { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prm input[type=range] { width: 100%; accent-color: var(--accent); }
+.prm .val { font: 11px var(--mono); text-align: right; white-space: nowrap; }
+.prm .seg-btn { grid-column: 2 / span 3; justify-self: start; flex-wrap: wrap; }
+.prm .seg-btn button { padding: 2px 7px; font-size: 11px; }
+.prm .cc { font: 10px var(--mono); color: var(--ok); border: 1px solid color-mix(in srgb, var(--ok) 50%, transparent); border-radius: 4px; padding: 0 3px; cursor: pointer; }
+.prm.learnable { outline: 1px dashed var(--muted); cursor: pointer; }
+.prm.learnable input { pointer-events: none; }
+.prm.learning { outline: 2px solid var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); }
+
+.route { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 12px; border-top: 1px dashed var(--line); padding-top: 6px; }
+.route-h { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; margin-right: 2px; }
+.route .chip { display: inline-flex; align-items: center; gap: 2px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 0 2px 0 8px; font: 11px var(--mono); }
+.route .chip button { border: 0; background: transparent; padding: 0 4px; }
+.route select { font-size: 11px; padding: 1px 4px; max-width: 170px; }
+.route.mods { flex-direction: column; align-items: stretch; }
+.mrow { display: grid; grid-template-columns: 1fr 90px 64px auto; align-items: center; gap: 6px; }
+.mrow .mto { font: 11px var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mrow input { width: 100%; accent-color: #6aa9ff; }
+.mrow .val { font: 11px var(--mono); text-align: right; }
+.warn-text { color: var(--warn); font-size: 11px; }
+.sources .src-h { font-size: 12px; font-weight: 600; margin-top: 2px; }
+
+.add-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 12px 0; }
+.add-row select { max-width: 420px; }
+.lab-keys { position: sticky; bottom: 0; background: var(--bg); padding: 8px 0; border-top: 1px solid var(--line); margin-top: 8px; }
+.lab-keys .kbd { height: 70px; }
+.lab-keys .kbd .w { width: 22px; height: 70px; }
+.lab-keys .kbd .b { width: 14px; height: 42px; }
+#learn.on { background: var(--ok); border-color: var(--ok); color: #111; }
+
+/* patch diagram */
+.patch-view { position: relative; background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 4px; overflow-x: auto; margin-bottom: 14px; }
+.patch-svg { display: block; font: 12px -apple-system, BlinkMacSystemFont, system-ui, sans-serif; user-select: none; }
+.patch-svg .box rect { fill: var(--panel-2); stroke: var(--line); stroke-width: 1.5; }
+.patch-svg .box { cursor: pointer; }
+.patch-svg .box.voice rect { stroke: color-mix(in srgb, var(--accent) 70%, var(--line)); }
+.patch-svg .box.fx rect { stroke-dasharray: 5 3; stroke: var(--muted); }
+.patch-svg .box.src rect { stroke: #6aa9ff; }
+.patch-svg .box.out rect { fill: var(--text); stroke: var(--text); }
+.patch-svg .box.out .bname { fill: var(--bg); font-weight: 700; }
+.patch-svg .box:hover rect { stroke-width: 2.5; }
+.patch-svg .bname { fill: var(--text); font-weight: 600; pointer-events: none; }
+.patch-svg .bid { fill: var(--muted); font: 10px var(--mono); pointer-events: none; }
+.patch-svg .port { fill: var(--bg); stroke: var(--accent); stroke-width: 2; cursor: crosshair; }
+.patch-svg .box.src .port { stroke: #6aa9ff; }
+.patch-svg .port:hover { r: 8; fill: var(--accent); }
+.patch-svg .cable { cursor: pointer; }
+.patch-svg .cable .hit { fill: none; stroke: transparent; stroke-width: 14; }
+.patch-svg .cable .line { fill: none; stroke: var(--muted); stroke-width: 2; pointer-events: none; }
+.patch-svg .cable.fm .line { stroke: var(--accent); }
+.patch-svg .cable.mod .line { stroke: #6aa9ff; stroke-dasharray: 5 4; }
+.patch-svg .cable.mod.off .line { opacity: .35; }
+.patch-svg .cable:hover .line { stroke-width: 3; }
+.patch-svg .cable.sel .line { stroke: var(--text); stroke-width: 3.5; }
+.patch-svg .clabel { fill: var(--muted); font: 10px var(--mono); pointer-events: none; }
+.patch-svg .drag-line { fill: none; stroke: var(--ok); stroke-width: 2; stroke-dasharray: 4 3; pointer-events: none; }
+.view-pop, .view-menu { position: absolute; z-index: 5; display: flex; align-items: center; gap: 8px; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; box-shadow: 0 6px 20px rgba(0, 0, 0, .3); font-size: 12px; white-space: nowrap; }
+.view-pop input { width: 120px; accent-color: #6aa9ff; }
+.view-pop .val { font: 11px var(--mono); min-width: 54px; }
+.card.flash { animation: flash 1.2s ease-out; }
+@keyframes flash { from { box-shadow: 0 0 0 3px var(--accent); } to { box-shadow: 0 0 0 0 transparent; } }

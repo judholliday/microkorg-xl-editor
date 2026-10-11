@@ -213,3 +213,27 @@ h2.section-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px
 .roll { width: 200px; height: 30px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; fill: var(--accent); flex: none; }
 .take-info { display: flex; flex-direction: column; font-size: 13px; min-width: 190px; }
 .capture > .hint { margin: 2px 4px; display: flex; align-items: center; gap: 10px; }
+
+/* chance and ratchet */
+.blk.chance { border-style: dashed; }
+.blk .badges { position: absolute; top: 3px; right: 6px; font: 600 9px var(--mono); color: var(--accent); pointer-events: none; }
+.steps.dense .blk .badges { right: 3px; top: auto; bottom: 26px; }
+.blk.single .badges { left: 0; right: 0; text-align: center; top: auto; bottom: 26px; }
+.lane-cell.chance { border-style: dashed; opacity: .75; }
+.lane-cell { font: 600 10px var(--mono); color: #fff; display: flex; align-items: center; justify-content: center; }
+
+/* controller lanes */
+.cc-lanes { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+.cc-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 12px; }
+.cc-head select { font-size: 12px; max-width: 200px; }
+.cc-row { display: grid; gap: 4px; user-select: none; }
+.steps.dense + .cc-lanes .cc-row { gap: 3px; }
+.cc-cell { position: relative; height: 40px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; cursor: ns-resize; touch-action: none; overflow: hidden; }
+.cc-cell.beat { border-left: 2px solid var(--muted); }
+.cc-cell.beyond { opacity: .2; pointer-events: none; }
+.cc-cell i { position: absolute; left: 0; right: 0; bottom: 0; background: color-mix(in srgb, var(--accent) 35%, transparent); pointer-events: none; }
+.cc-cell.set i { background: var(--accent); }
+.cc-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.lanes ~ .cc-lanes .cc-row { gap: 2px; }
+.snd-item.on { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+.snd-panel .lib-list:focus { outline: none; }

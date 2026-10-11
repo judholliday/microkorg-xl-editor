@@ -21,6 +21,8 @@ Serves the editor on http://localhost:8765 (Web MIDI needs a localhost origin) a
                      the user's own sound collection, stored as .syx files in my-sounds/
   GET  /api/types, POST /api/types
                      sound types the user assigned in the Presets tab (presets/sound-types.json)
+  GET  /api/instruments, POST /api/instruments, POST /api/instruments/delete
+                     Lab instruments (patches), stored as JSON in instruments/; the list includes each patch
   GET  /api/sequences, POST /api/sequences, POST /api/sequences/delete
                      sequencer songs, stored as JSON in sequences/ (files are read as /sequences/<file>)
   POST /api/pattern  have the AI write sequencer patterns for one track; streams like /api/design
@@ -55,8 +57,11 @@ USER_TYPES = DATA / 'sound-types.json'
 HIDDEN_DESIGNS = DATA / 'hidden-designs.json'  # old hide list; folded into ai-designs/ files
 AI_DESIGNS = DATA / 'ai-designs'
 SEQUENCES = DATA / 'sequences'
+INSTRUMENTS = DATA / 'instruments'
 MY_PATTERNS = DATA / 'my-patterns'
-DATA_FOLDERS = ('my-sounds', 'sequences')  # served to the page at /my-sounds/<file>, /sequences/<file>
+DATA_FOLDERS = ('my-sounds', 'sequences', 'audio')  # served to the page at /my-sounds/<file>, /sequences/<file>, /audio/<file>
+AUDIO = DATA / 'audio'  # recordings (WAV), kept out of the data repo's git
+MAX_AUDIO = 1_000_000_000
 # Claude Code keeps each session's transcript under ~/.claude/projects/<working dir with
 # non-alphanumerics replaced by "-">/<session id>.jsonl; the AI designer runs in ai/.
 SESSIONS = Path.home() / '.claude' / 'projects' / re.sub(r'[^A-Za-z0-9]', '-', str(AI))
@@ -149,7 +154,7 @@ def pattern_schema(n, names, pool):
 def ensure_ai_reference():
     """Rebuild ai/ when presets or the parameter code are newer than the generated files."""
     target = AI / 'system.md'
-    sources = [*PRESETS.glob('*'), *MY_SOUNDS.glob('*.syx'), *(ROOT / 'js').glob('*.js'),
+    sources = [*PRESETS.glob('*'), *MY_SOUNDS.glob('*.syx'), *(ROOT / 'js' / 'xl').glob('*.js'),
                ROOT / 'tools/build_ai_reference.mjs', USER_TYPES]
     if MY_SOUNDS.exists():
         sources.append(MY_SOUNDS)  # directory mtime changes when a sound is deleted
@@ -166,10 +171,11 @@ def ensure_ai_reference():
 
 # ---- the data folder: the user's files, in their own git repo ----
 
-DATA_GITIGNORE = '''# Kept out of git: removed items (the deleted/ folders are a safety net), and the AI
-# settings, which hold API keys.
+DATA_GITIGNORE = '''# Kept out of git: removed items (the deleted/ folders are a safety net), the AI
+# settings, which hold API keys, and audio recordings (too big for git and GitHub).
 deleted/
 settings.local.json
+audio/
 '''
 
 
@@ -182,6 +188,10 @@ def init_data():
     DATA.mkdir(parents=True, exist_ok=True)
     if not (DATA / '.gitignore').exists():
         (DATA / '.gitignore').write_text(DATA_GITIGNORE)
+    elif 'audio/' not in (DATA / '.gitignore').read_text():
+        # Data folders made before audio recording: keep recordings out of git too.
+        with open(DATA / '.gitignore', 'a') as f:
+            f.write('\n# Audio recordings: too big for git and GitHub.\naudio/\n')
     if shutil.which('git') and not (DATA / '.git').exists():
         data_git('init', '-q')
         commit_data_now('Start the data repo')
@@ -194,7 +204,7 @@ _pending_commits = []
 
 def commit_data(message):
     """Commits the data folder shortly after a save; saves close together become one commit.
-    Local only: nothing is ever pushed."""
+    If the data repo has a remote called "origin" (e.g. a private GitHub backup), it's pushed too."""
     global _commit_timer
     with _commit_lock:
         _pending_commits.append(message)
@@ -224,6 +234,34 @@ def commit_data_now(message):
     r = subprocess.run(['git', '-C', str(DATA), *ident, 'commit', '-q', '-m', message], capture_output=True, text=True)
     if r.returncode:
         sys.stderr.write(f'Committing the data folder failed: {r.stderr.strip()}\n')
+        return
+    push_data()
+
+
+_push_lock = threading.Lock()
+
+
+def push_data():
+    """Backs the data folder up to its "origin" remote in the background, if it has one. Never asks
+    for a password; when offline or refused it just tries again after the next save."""
+    if not shutil.which('git') or not (DATA / '.git').exists() or data_git('remote', 'get-url', 'origin').returncode:
+        return
+
+    def push():
+        if not _push_lock.acquire(blocking=False):
+            return  # a push is already running; the next save pushes again
+        try:
+            env = dict(os.environ, GIT_TERMINAL_PROMPT='0', GIT_SSH_COMMAND='ssh -o BatchMode=yes -o ConnectTimeout=15')
+            r = subprocess.run(['git', '-C', str(DATA), 'push', '-q', 'origin', 'HEAD'],
+                               capture_output=True, text=True, env=env, timeout=120)
+            if r.returncode:
+                sys.stderr.write(f'Backing up the data folder failed (will retry after the next save): {r.stderr.strip()}\n')
+        except subprocess.TimeoutExpired:
+            sys.stderr.write('Backing up the data folder timed out (will retry after the next save).\n')
+        finally:
+            _push_lock.release()
+
+    threading.Thread(target=push, daemon=True).start()
 
 
 def session_designs(limit=200):
@@ -520,6 +558,95 @@ def delete_sequence(name):
     commit_data(f'Remove song {path.stem}')
 
 
+def list_instruments():
+    out = []
+    for f in INSTRUMENTS.glob('*.json'):
+        try:
+            patch = json.loads(f.read_text())
+        except (OSError, ValueError):
+            continue
+        out.append({'file': f.name, 'name': patch.get('name') or f.stem, 'patch': patch,
+                    'modified': time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(f.stat().st_mtime))})
+    out.sort(key=lambda m: m['name'].lower())
+    return out
+
+
+def save_instrument(req):
+    """Saves a Lab instrument as instruments/<name>.json, replacing a file of the same name."""
+    patch = req.get('patch')
+    if not isinstance(patch, dict) or patch.get('format') != 'mkxl-inst' or not isinstance(patch.get('modules'), list):
+        raise ValueError('not a Lab instrument')
+    INSTRUMENTS.mkdir(parents=True, exist_ok=True)
+    path = INSTRUMENTS / f"{safe_stem(patch.get('name') or 'Untitled')}.json"
+    path.write_text(json.dumps(patch, indent=1) + '\n')
+    commit_data(f"Save instrument {patch.get('name') or path.stem}")
+    return path.name
+
+
+def delete_instrument(name):
+    """Moves the instrument into instruments/deleted/ rather than erasing it."""
+    path = INSTRUMENTS / str(name)
+    if path.parent != INSTRUMENTS or path.suffix != '.json' or not path.is_file():
+        raise ValueError('no such instrument')
+    trash = INSTRUMENTS / 'deleted'
+    trash.mkdir(exist_ok=True)
+    path.replace(trash / path.name)
+    commit_data(f'Remove instrument {path.stem}')
+
+
+def wav_seconds(path):
+    """Length of a WAV file from its header (0 if it can't be read)."""
+    try:
+        with open(path, 'rb') as f:
+            head = f.read(4096)
+        if head[:4] != b'RIFF' or head[8:12] != b'WAVE':
+            return 0
+        i, rate, block = 12, 0, 0
+        while i + 8 <= len(head):
+            cid, size = head[i:i + 4], int.from_bytes(head[i + 4:i + 8], 'little')
+            if cid == b'fmt ':
+                rate, block = int.from_bytes(head[i + 12:i + 16], 'little'), int.from_bytes(head[i + 20:i + 22], 'little')
+            elif cid == b'data':
+                return size / (rate * block) if rate and block else 0
+            i += 8 + size + (size & 1)
+    except OSError:
+        pass
+    return 0
+
+
+def list_audio():
+    out = []
+    for f in AUDIO.glob('*.wav'):
+        st = f.stat()
+        out.append({'file': f.name, 'name': f.stem, 'size': st.st_size, 'seconds': round(wav_seconds(f), 2),
+                    'modified': time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(st.st_mtime))})
+    out.sort(key=lambda m: m['modified'], reverse=True)
+    return out
+
+
+def save_audio(name, body):
+    """Saves a WAV recording as audio/<name>.wav, adding (2), (3)... rather than replacing one."""
+    if body[:4] != b'RIFF' or body[8:12] != b'WAVE':
+        raise ValueError('not a WAV file')
+    stem = re.sub(r'[^A-Za-z0-9 _\-()]', '', name or '').strip()[:60] or 'Recording'
+    AUDIO.mkdir(parents=True, exist_ok=True)
+    path, n = AUDIO / f'{stem}.wav', 2
+    while path.exists():
+        path, n = AUDIO / f'{stem} ({n}).wav', n + 1
+    path.write_bytes(body)
+    return path.name
+
+
+def delete_audio(name):
+    """Moves a recording into audio/deleted/ rather than erasing it."""
+    path = AUDIO / str(name)
+    if path.parent != AUDIO or path.suffix != '.wav' or not path.is_file():
+        raise ValueError('no such recording')
+    trash = AUDIO / 'deleted'
+    trash.mkdir(exist_ok=True)
+    path.replace(trash / path.name)
+
+
 def list_my_patterns():
     out = []
     for f in MY_PATTERNS.glob('*.json'):
@@ -624,6 +751,10 @@ class Handler(SimpleHTTPRequestHandler):
                 return self._json(200, read_user_types())
             if self.path == '/api/sequences':
                 return self._json(200, list_sequences())
+            if self.path == '/api/instruments':
+                return self._json(200, list_instruments())
+            if self.path == '/api/audio':
+                return self._json(200, list_audio())
             if self.path == '/api/patterns':
                 return self._json(200, list_my_patterns())
             return self._json(404, {'error': 'not found'})
@@ -633,7 +764,7 @@ class Handler(SimpleHTTPRequestHandler):
             return self._data_file(DATA / parts[0], parts[1])
         # Never serve the data folder itself (it holds API keys), generated AI files, git or
         # other hidden files, or the Python environment.
-        if parts[0] in ('ai', 'data', '.venv', 'settings.local.json') or any(p.startswith('.') for p in parts):
+        if parts[0] in ('ai', 'data', 'test-data', '.venv', 'settings.local.json') or any(p.startswith('.') for p in parts):
             return self._json(404, {'error': 'not found'})
         return super().do_GET()
 
@@ -643,12 +774,22 @@ class Handler(SimpleHTTPRequestHandler):
             return self._json(404, {'error': 'not found'})
         body = path.read_bytes()
         self.send_response(200)
-        self.send_header('Content-Type', 'application/json' if path.suffix == '.json' else 'application/octet-stream')
+        self.send_header('Content-Type', {'.json': 'application/json', '.wav': 'audio/wav'}.get(path.suffix, 'application/octet-stream'))
         self.send_header('Content-Length', str(len(body)))
         self.end_headers()
         self.wfile.write(body)
 
     def do_POST(self):
+        # A recording: the WAV file is the request body, its name in the query string.
+        if urlsplit(self.path).path == '/api/audio' and self._trusted() and 'audio/wav' in (self.headers.get('Content-Type') or ''):
+            length = int(self.headers.get('Content-Length') or 0)
+            if not 0 < length <= MAX_AUDIO:
+                return self._json(413, {'error': 'recording too big'})
+            name = (parse_qs(urlsplit(self.path).query).get('name') or ['Recording'])[0]
+            try:
+                return self._json(200, {'file': save_audio(name, self.rfile.read(length))})
+            except ValueError as e:
+                return self._json(400, {'error': str(e)})
         if not self._trusted() or 'application/json' not in (self.headers.get('Content-Type') or ''):
             return self._json(403, {'error': 'forbidden'})
         try:
@@ -685,6 +826,20 @@ class Handler(SimpleHTTPRequestHandler):
                 if self.path == '/api/sequences':
                     return self._json(200, {'file': save_sequence(req)})
                 delete_sequence(req.get('file'))
+                return self._json(200, {'ok': True})
+            except (ValueError, AttributeError) as e:
+                return self._json(400, {'error': str(e)})
+        if self.path == '/api/audio/delete':
+            try:
+                delete_audio(req.get('file'))
+                return self._json(200, {'ok': True})
+            except (ValueError, AttributeError) as e:
+                return self._json(400, {'error': str(e)})
+        if self.path in ('/api/instruments', '/api/instruments/delete'):
+            try:
+                if self.path == '/api/instruments':
+                    return self._json(200, {'file': save_instrument(req)})
+                delete_instrument(req.get('file'))
                 return self._json(200, {'ok': True})
             except (ValueError, AttributeError) as e:
                 return self._json(400, {'error': str(e)})
@@ -816,6 +971,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 def main():
     init_data()
+    push_data()  # catch up on anything saved while offline
     server = ThreadingHTTPServer(('127.0.0.1', PORT), Handler)
     print(f'microKORG XL Editor: http://localhost:{PORT}/')
     ready, problem = providers.available()

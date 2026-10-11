@@ -13,3 +13,6 @@ __pycache__/
 # data/ is its own git repo; see README.
 data/
 recordings/
+
+# Throwaway data folder for the "editor-test" server (.claude/launch.json)
+test-data/

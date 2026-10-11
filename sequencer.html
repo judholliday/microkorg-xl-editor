@@ -17,13 +17,25 @@
       <nav class="app-nav" aria-label="Switch view">
         <a href="index.html#editor" data-view="editor">Sound Editor</a>
         <a href="index.html#sequencer" data-view="sequencer" aria-current="page">Sequencer</a>
+        <a href="index.html#lab" data-view="lab">Lab</a>
       </nav>
     </div>
     <div class="transport">
       <button id="play" title="Play (Space)">▶ Play</button>
       <button id="stop" title="Stop (Space)">■ Stop</button>
-      <button id="rec" title="Record (R): while playing, notes you play on the Keys in keyboard are added to the selected track's pattern">● Rec</button>
+      <button id="rec" title="Record (R): while playing, notes you play on the MIDI in keyboard are added to the selected track's pattern">● Rec</button>
     </div>
+    <details class="dropdown" id="click-menu">
+      <summary class="field" title="Metronome">Click <span id="click-sum"></span></summary>
+      <div class="dropdown-body">
+        <label><input type="radio" name="click" value="off"> Off</label>
+        <label><input type="radio" name="click" value="rec"> While recording</label>
+        <label><input type="radio" name="click" value="on"> Always</label>
+        <label title="With Rec on, Play clicks four beats before the sequencer starts"><input type="checkbox" id="count-in"> Count in one bar when recording</label>
+        <label>Volume <input type="range" id="click-vol" min="0" max="100"></label>
+        <span class="hint">The click plays on the computer, not the XL.</span>
+      </div>
+    </details>
     <span class="pos" id="pos">—</span>
     <label class="field">BPM <input type="number" id="bpm" min="20" max="300"></label>
     <label class="field">Swing <input type="range" id="swing" min="50" max="75"> <span id="swing-val"></span></label>
@@ -32,7 +44,7 @@
       <select id="scale-type"></select>
     </label>
     <span class="spacer"></span>
-    <label class="field" title="Notes played here go to the selected track: they fill in steps, set the note pool, or just play through">Keys in <select id="keys-in"></select>
+    <label class="field" title="Notes played here go to the selected track: they fill in steps, set the note pool, or just play through">MIDI in <select id="keys-in"></select>
       <span id="keys-led" class="keys-led" title="Lights up when notes arrive from your keyboard">●</span><span id="keys-last" class="keys-last"></span></label>
     <label class="field" title="Also send the keys you play to the selected track's output. Turn this off if your keyboard makes its own sound too (e.g. the XL with Local Control on)."><input type="checkbox" id="thru"> Thru</label>
     <details class="dropdown" id="clock-out">
@@ -66,11 +78,6 @@
     </h2>
     <div class="song" id="song"></div>
 
-    <h2 class="section-head">
-      <button class="ghost collapse" id="cap-col" title="Show or hide captured playing">▾</button> Capture
-      <span class="hint plain" id="cap-sum"></span>
-    </h2>
-    <div class="capture" id="capture"></div>
 
     <h2 class="section-head">Tracks
       <button class="ghost small plain" id="collapse-all">Collapse all</button>
@@ -90,5 +97,6 @@
 
   <div id="toasts" class="toasts"></div>
   <script type="module" src="js/seq/ui.js"></script>
+  <script type="module" src="js/core/topbar.js"></script>
 </body>
 </html>

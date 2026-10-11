@@ -3,23 +3,35 @@
 //
 // A song file (data/sequences/<name>.json) looks like:
 //   { format: 'mkxl-seq', version: 1, name, bpm, swing, scale: { root, type } | null,
-//     tracks: [{ name, out, ch, voice, mode, rate, pattern, mute, solo, vol, sound, program,
+//     tracks: [{ name, out, ch, voice, inst, mode, rate, pattern, mute, solo, vol, sound, program,
 //                pool: { notes, order, latch },
-//                patterns: { A: { length, steps: [{ i, notes, vel, gate, len }] }, B, C, D } }],
+//                patterns: { A: { length, steps: [{ i, notes, vel, gate, len, prob?, rat? }],
+//                                 cc?: [{ cc, glide, steps: [{ i, v }] }] }, B, C, D } }],
 //     song: [{ bars, play: ['A', null, ...] }] }   // play[] has one entry per track; null = silent
 //
 // Steps are stored sparsely: only steps that play a note, each with its start index `i`, the MIDI
 // notes it plays (several = a chord; empty on note-pool tracks), velocity 1-127, gate (% of its
-// last step that the note sounds for) and len (how many steps the note is held across).
+// last step that the note sounds for) and len (how many steps the note is held across). Optional:
+// prob (1-99: the % chance the step plays; absent = always) and rat (2-4: the note repeats that
+// many times across its length, a ratchet; absent = once).
 //
+// `cc` lanes send a MIDI Control Change from steps that set a value (0-127), e.g. a filter sweep.
+// With `glide`, the value moves smoothly from each set step to the next (wrapping round).
+//
+// `inst` is a Lab instrument ({ name, patch }, see lab/patch.js) a Computer track plays instead of
+// its test voice.
 // `sound` is the XL sound a track uses ({ name, data: the program's bytes }), sent to the XL when
 // playback starts. `program` (0-127) is a Program Change sent to other gear when playback starts.
 // `vol` (0-127, 100 = normal) scales the computer sound, and is sent to MIDI gear as CC 7.
+
+import { normalizePatch } from '../lab/patch.js';
 
 export const FORMAT = 'mkxl-seq';
 export const VERSION = 1;
 export const MAX_STEPS = 64;
 export const MAX_TRACKS = 8;
+export const MAX_CC_LANES = 4;
+export const PROBS = [100, 87, 75, 62, 50, 37, 25, 12];
 export const PATTERNS = ['A', 'B', 'C', 'D'];
 export const TICKS_PER_BEAT = 96;
 export const TICKS_PER_BAR = TICKS_PER_BEAT * 4;
@@ -58,7 +70,7 @@ export const newPattern = (length = 16) => ({ length, steps: [] });
 export function newTrack(index = 0, fields = {}) {
   return {
     name: `Track ${index + 1}`, out: COMPUTER, ch: 2, voice: VOICES[index % VOICES.length],
-    mode: 'steps', rate: '1/16', pattern: 'A', mute: false, solo: false, vol: 100, sound: null, program: null,
+    mode: 'steps', rate: '1/16', pattern: 'A', mute: false, solo: false, vol: 100, sound: null, program: null, inst: null,
     pool: { notes: [48, 51, 55], order: 'up', latch: true },
     patterns: Object.fromEntries(PATTERNS.map(p => [p, newPattern()])),
     ...fields,
@@ -107,13 +119,49 @@ export function cleanPattern(p, { length, onlyBelow = MAX_STEPS } = {}) {
   for (const s of Array.isArray(p?.steps) ? p.steps : []) {
     const i = clamp(s?.i, 0, MAX_STEPS - 1, -1);
     if (i < 0 || i >= onlyBelow || steps.some(x => x.i === i)) continue;
-    steps.push({ i, notes: [...new Set(midiNotes(s.notes))].sort((a, b) => a - b).slice(0, 8),
-      vel: clamp(s.vel, 1, 127, 100), gate: clamp(s.gate, 1, 100, 60), len: clamp(s.len, 1, MAX_STEPS, 1) });
+    const step = { i, notes: [...new Set(midiNotes(s.notes))].sort((a, b) => a - b).slice(0, 8),
+      vel: clamp(s.vel, 1, 127, 100), gate: clamp(s.gate, 1, 100, 60), len: clamp(s.len, 1, MAX_STEPS, 1) };
+    const prob = clamp(s.prob, 1, 100, 100), rat = clamp(s.rat, 1, 4, 1);
+    if (prob < 100) step.prob = prob;
+    if (rat > 1) step.rat = rat;
+    steps.push(step);
   }
   steps.sort((a, b) => a.i - b.i);
   // A note can't hold over the next one.
   steps.forEach((s, k) => { if (steps[k + 1]) s.len = Math.min(s.len, steps[k + 1].i - s.i); });
-  return { length, steps };
+  const cc = cleanLanes(p?.cc, onlyBelow);
+  return cc.length ? { length, steps, cc } : { length, steps };
+}
+
+function cleanLanes(raw, onlyBelow = MAX_STEPS) {
+  const lanes = [];
+  for (const l of Array.isArray(raw) ? raw : []) {
+    const cc = Number.isInteger(l?.cc) && l.cc >= 0 && l.cc <= 119 ? l.cc : -1;
+    if (cc < 0 || lanes.some(x => x.cc === cc) || lanes.length >= MAX_CC_LANES) continue;
+    const steps = [];
+    for (const s of Array.isArray(l.steps) ? l.steps : []) {
+      const i = clamp(s?.i, 0, MAX_STEPS - 1, -1);
+      if (i < 0 || i >= onlyBelow || steps.some(x => x.i === i)) continue;
+      steps.push({ i, v: clamp(s.v, 0, 127, 64) });
+    }
+    lanes.push({ cc, glide: !!l.glide, steps: steps.sort((a, b) => a.i - b.i) });
+  }
+  return lanes;
+}
+
+// A lane's value at a (fractional) step position, or null where it sends nothing: without glide,
+// only at steps that set a value; with glide, everywhere once it has a value, moving in a straight
+// line from each set step to the next (and from the last round to the first).
+export function laneValue(lane, pos, length) {
+  const pts = lane.steps.filter(s => s.i < length);
+  if (!pts.length) return null;
+  if (!lane.glide) return pts.find(s => s.i === pos)?.v ?? null;
+  const prev = pts.filter(s => s.i <= pos).at(-1) || pts.at(-1); // the last set step at or before pos
+  const next = pts.find(s => s.i > pos) || pts[0]; //                 the first one after it
+  const from = prev.i <= pos ? prev.i : prev.i - length;
+  const to = next.i > pos ? next.i : next.i + length;
+  if (prev === next && pts.length === 1) return prev.v;
+  return Math.round(prev.v + (next.v - prev.v) * (pos - from) / (to - from));
 }
 
 // An XL program as stored with a track: its name and raw bytes (346 for the XL).
@@ -121,6 +169,15 @@ export function cleanSound(s) {
   const data = s?.data;
   if (!Array.isArray(data) || data.length < 300 || data.length > 400 || !data.every(b => Number.isInteger(b) && b >= 0 && b <= 255)) return null;
   return { name: String(s.name ?? '').slice(0, 16), data: [...data] };
+}
+
+// A Lab instrument stored with a track: its name and patch.
+export function cleanInst(x) {
+  if (!x || typeof x !== 'object') return null;
+  try {
+    const { patch } = normalizePatch(x.patch);
+    return { name: String(x.name ?? patch.name).slice(0, 40), patch };
+  } catch { return null; }
 }
 
 function normalizeTrack(t, ti) {
@@ -139,6 +196,7 @@ function normalizeTrack(t, ti) {
     mute: !!t?.mute, solo: !!t?.solo,
     vol: clamp(t?.vol, 0, 127, 100),
     sound: cleanSound(t?.sound),
+    inst: cleanInst(t?.inst),
     program: Number.isInteger(t?.program) && t.program >= 0 && t.program <= 127 ? t.program : null,
     pool: {
       notes: notes(t?.pool?.notes).slice(0, 16),
@@ -193,7 +251,8 @@ export function noteSteps(step, patternLength) {
   return held - 1 + step.gate / 100;
 }
 
-export const copyPattern = p => ({ length: p.length, steps: p.steps.map(s => ({ ...s, notes: [...s.notes] })) });
+export const copyPattern = p => ({ length: p.length, steps: p.steps.map(s => ({ ...s, notes: [...s.notes] })),
+  ...(p.cc?.length ? { cc: p.cc.map(l => ({ ...l, steps: l.steps.map(s => ({ ...s })) })) } : {}) });
 
 // ---- note pool ----
 

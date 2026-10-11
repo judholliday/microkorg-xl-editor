@@ -5,7 +5,7 @@ import { TICKS_PER_BEAT, TICKS_PER_BAR } from './model.js';
 import { Engine } from './engine.js';
 
 // Writes a type-1 file: a tempo track, then one track per entry in `tracks`.
-//   { name, bpm, tracks: [{ name, ch (1-16), program?, notes: [{ tick, dur, note, vel }] }] }
+//   { name, bpm, tracks: [{ name, ch (1-16), program?, notes: [{ tick, dur, note, vel }], ccs?: [{ tick, cc, v }] }] }
 export function writeMidi({ name = '', bpm, tracks }) {
   const chunks = [chunk('MThd', [0, 1, ...u16(tracks.length + 1), ...u16(TICKS_PER_BEAT)])];
   const usPerBeat = Math.round(60e6 / bpm);
@@ -18,6 +18,7 @@ export function writeMidi({ name = '', bpm, tracks }) {
     const ch = Math.min(15, Math.max(0, (t.ch || 1) - 1));
     const events = [{ tick: 0, data: meta(0x03, text(t.name)) }];
     if (Number.isInteger(t.program)) events.push({ tick: 0, data: [0xc0 | ch, t.program] });
+    for (const c of t.ccs || []) events.push({ tick: Math.max(0, Math.round(c.tick)), data: [0xb0 | ch, c.cc, c.v] });
     for (const n of t.notes) {
       const tick = Math.max(0, Math.round(n.tick));
       events.push({ tick, data: [0x90 | ch, n.note, Math.min(127, Math.max(1, n.vel))] });
@@ -55,7 +56,7 @@ function vlq(n) {
 // included, muted or not (mute them in the DAW instead).
 export function renderSong(song, { seed = 1 } = {}) {
   const copy = { ...song, tracks: song.tracks.map(t => ({ ...t, mute: false, solo: false })) };
-  const out = copy.tracks.map(() => []);
+  const out = copy.tracks.map(() => []), ccs = copy.tracks.map(() => []);
   let now = 0, t0 = 0;
   const tickMs = 60000 / (song.bpm * TICKS_PER_BEAT);
   const engine = new Engine({
@@ -63,6 +64,7 @@ export function renderSong(song, { seed = 1 } = {}) {
     sink: {
       start(at) { t0 = at; },
       note(ti, note, vel, at, dur) { out[ti].push({ tick: (at - t0) / tickMs, dur: dur / tickMs, note, vel }); },
+      cc(ti, cc, v, at) { ccs[ti].push({ tick: Math.round((at - t0) / tickMs), cc, v }); },
     },
   });
   engine.mode = 'song';
@@ -78,6 +80,7 @@ export function renderSong(song, { seed = 1 } = {}) {
       name: t.name, ch: t.ch, program: t.program,
       notes: out[ti].filter(n => Math.round(n.tick) < end)
         .map(n => ({ ...n, tick: Math.round(n.tick), dur: Math.min(Math.round(n.dur), end - Math.round(n.tick)) })),
+      ccs: ccs[ti].filter(c => c.tick < end),
     })),
   };
 }
@@ -101,7 +104,7 @@ export function readMidi(bytes) {
   for (let k = 0; k < ntrks; k++) {
     if (str(4) !== 'MTrk') throw new Error('bad track');
     const end = num(4) + p;
-    const track = { name: '', notes: [] }, open = new Map();
+    const track = { name: '', notes: [], ccs: [] }, open = new Map();
     let tick = 0, status = 0;
     while (p < end) {
       tick += readVlq();
@@ -112,7 +115,8 @@ export function readMidi(bytes) {
         if (type === 0x51) res.tempo = data[0] << 16 | data[1] << 8 | data[2];
       } else {
         const type = status & 0xf0, a = bytes[p++], b = type === 0xc0 || type === 0xd0 ? 0 : bytes[p++];
-        if (type === 0x90 && b > 0) open.set(a, { tick, note: a, vel: b, ch: (status & 15) + 1 });
+        if (type === 0xb0) track.ccs.push({ tick, cc: a, v: b });
+        else if (type === 0x90 && b > 0) open.set(a, { tick, note: a, vel: b, ch: (status & 15) + 1 });
         else if (type === 0x80 || type === 0x90) {
           const n = open.get(a);
           if (n) { track.notes.push({ ...n, dur: tick - n.tick }); open.delete(a); }

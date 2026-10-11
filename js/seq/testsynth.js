@@ -31,6 +31,9 @@ export function wake() {
   return ac;
 }
 
+// The master input (after wake), for other instruments to play through the same limiter.
+export function output() { wake(); return master; }
+
 // Starts a voice at audio time t0; returns a function that releases it at audio time t.
 function start(voice, midi, vel, t0, gain = 1) {
   const a = wake(), v = VOICES[voice] || VOICES.Keys;
@@ -132,6 +135,14 @@ function drum(a, midi, vel, t0, gain = 1) {
   else if (midi >= 60 && midi <= 64) hit(a, t0, { tone: [0, 0, 330, 220, 180][midi - 60] || 260, from: 400, level: v, decay: 0.2 }); // bongos, congas
   else if (TOMS[midi]) hit(a, t0, { tone: TOMS[midi], from: TOMS[midi] * 1.6, level: v * 1.2, decay: 0.35 });
   else hit(a, t0, { filter: 'bandpass', freq: 2000 + (midi % 12) * 300, q: 2, level: v * 0.5, decay: 0.08 });
+}
+
+// A metronome click at a performance.now() time: higher on the first beat of a bar. level 0-1.
+export function click(atMs, accent, level = 0.6) {
+  const a = wake();
+  const t0 = Math.max(a.currentTime, a.currentTime + (atMs - performance.now()) / 1000);
+  const tone = accent ? 2000 : 1400;
+  hit(a, t0, { tone, type: 'square', filter: 'bandpass', freq: tone, q: 6, level: level * (accent ? 0.9 : 0.6), decay: 0.04 });
 }
 
 // Plays a note at a performance.now() time (as the engine uses), for durMs. `gain` is the

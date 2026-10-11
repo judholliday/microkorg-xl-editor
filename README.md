@@ -6,7 +6,8 @@ A browser-based sound editor for the Korg microKORG XL. It replaces Korg's old S
 
 0. Install [uv](https://docs.astral.sh/uv/) once (`brew install uv`). It fetches the right Python and the AI packages automatically the first time the editor starts. Without it, the editor still runs on the Mac's own Python, with Claude Code as the only AI option.
 1. Connect the microKORG XL by USB.
-2. Double-click **`Start Editor.command`**. It serves the page on `http://localhost:8765` and opens it in Chrome (or Edge).
+2. Double-click **`Start Editor.command`**. It serves the page on `http://localhost:8765` and opens it in Chrome (or Edge). Closing its Terminal window (or Ctrl-C) stops the editor. If an editor is already running, even an older version left behind, it's replaced, so starting again is always safe. **`Stop Editor.command`** stops it without the window.
+   - From Terminal instead: `uv run serve.py` (or `python3 serve.py`) in the project folder, then open http://localhost:8765; Ctrl-C stops it. `MKXL_PORT` picks another port and `MKXL_DATA` another data folder.
    - If macOS blocks it the first time, right-click the file, choose **Open**, then confirm.
    - Safari isn't supported because it has no Web MIDI.
 3. Allow MIDI/SysEx access when the browser asks.
@@ -46,12 +47,16 @@ Switch between **Sound Editor** and **Sequencer** at the top of either page (or 
 - **Tracks** (up to 8): each has its own output and MIDI channel, four patterns (A–D), a step rate (1/32 to 1/4, including triplets), mute (M) and solo (S), and a **Vol** slider. For the computer sound it sets the track's loudness (100 is normal; above that boosts up to 4×); for MIDI gear it sends MIDI Volume (CC 7) when you move it, and at Play if it isn't at the default 100. Choose **Computer (test sound)** as the output to hear a track without any instruments connected; its **Sound** can be Bass, Pluck, Pad, Keys or **Drums** (a synthesised kit on the standard General MIDI drum notes, so library drum patterns play on it). Drum tracks show drum names (Kick, Snare, Hat…) on their steps.
 - **Drum tracks** (named like "Drums", or using the Drums sound) show a drum-machine grid instead: one row per drum, one column per step. Click or drag along a row to add or remove hits, ⇧-click a hit to accent it, click a drum's name to hear it, and **+ Add a drum** for more rows. Click a step number to open that step in the editor, which shows a kit of pads instead of a keyboard. Drums hitting on the same step share its velocity.
 - **Sounds:** a track playing the XL (its SOUND port) remembers an XL sound, shown on its **🎛** button. When playback starts, a track with no sound yet takes the one in the Sound Editor, and its sound is sent to the XL. Click 🎛 to send the sound and open it in the Sound Editor; edits you make there (or sounds you pick from Presets, or programs you change on the synth) are remembered for that track, and saved with the song. The XL plays one sound at a time, so with several XL tracks the one you last sent wins. With **XL sound follows selected track** (on by default), selecting a track (click it, or press 1–8) switches the XL to that track's sound, for quick switching while playing. Tracks on other gear have a **Prog** menu: a Program Change sent when playback starts and when you change it.
+- **Browse** (next to an XL track's 🎛 button): try other XL sounds on the track while the song plays. It lists the sounds that suit the track's role (bass sounds for a bass track, and so on; choose Type: All for everything) from My Sounds and every bank in `presets/`. Click a sound, or step through the list with ↑ ↓, and it's sent to the XL at once. Nothing changes until **Use for …**; closing the browser or **Back** puts the track's own sound back.
 - **Steps:** any pattern length from 1 to 64. Up to 32 steps fit on one page; longer patterns page in 32s. Each note has its own notes (several make a chord), velocity, gate, and how many steps it's held for. Drag a note's right edge to hold it longer.
+- **Chance and ratchet** (in the step editor): **Chance** below 100% leaves a step out at random, so a loop changes a little each time round; such notes have a dashed outline. **Ratchet** repeats the note 2–4 times across its length, for rolls and stutters. Both show as small badges on the note.
+- **Controller lanes** (**+ Controller lane** under the selected track's steps, up to 4 per pattern): send a MIDI controller from the steps, e.g. a filter sweep. Click or drag in the lane to set values, ⌥-drag to clear. **Glide** moves smoothly between the values you set, instead of jumping. Choose the controller from the list, or click **Learn** and turn a knob on your keyboard to use whatever it sends (the XL's knobs send the controllers set in its Global settings; if Learn hears nothing, set them to send Control Changes). With **Rec** on, turning a knob while playing records it into a lane. Lanes go into exported .mid files as automation; the computer test sound ignores them.
 - **Note pool:** instead of fixed notes, the steps set the rhythm and each one that fires plays the next note from the pool. Play a chord on your keyboard to change the pool while it plays, and choose the order (as played, up, down, up-down, random). With **Latch** off, it plays only while you hold keys.
 - **Song:** a grid of sections. Each section has a length in bars and a pattern (or silence) for each track. **Loop patterns** plays each track's current pattern instead; pattern buttons then switch at the next bar.
-- **Keys in:** notes from your keyboard go to the selected track, while the Sequencer is on screen. The light next to it flashes green for notes on the chosen port, or amber (with the port's name) when notes arrive on a different one. With the step editor open and the sequencer stopped, they fill in the selected step (hold several for a chord) and move to the next one. **Thru** also plays them on the track's output; turn it off if your keyboard makes its own sound (the XL does unless its Local Control is off).
-- **● Rec** (or press R): while playing, the keys you play on the Keys in keyboard are recorded into the selected track's playing pattern, on the nearest step and held as long as you held the key. Notes are added to what's already there, so you can build a part up over several loops. One Undo removes everything recorded in one run. Works on Steps tracks (on a note-pool track, keys set the pool as usual).
-- **Capture:** everything you play on the Keys in keyboard is kept for an hour, whether or not you pressed Rec, the sequencer was playing, or you were in the Sound Editor. Playing is split into takes wherever you stopped for 4 seconds. Each take shows a little piano roll; **▶** plays it on the selected track's sound, **→ Track A** puts it into the selected track's shown pattern (quantized to the track's steps; Undo brings back what was there), **.mid** downloads it as you played it. A take played along with the sequencer lands on the bars it was played in. A take played freely starts on its first note, at a guessed tempo; change **BPM** if the bars look wrong, and **Song to …** sets the song to that tempo. Takes longer than a pattern can hold get a **From bar** choice. Takes are kept in this browser only: put the good ones into a track or a .mid file.
+- **MIDI in:** notes from your keyboard go to the selected track, while the Sequencer is on screen. The light next to it flashes green for notes on the chosen port, or amber (with the port's name) when notes arrive on a different one. With the step editor open and the sequencer stopped, they fill in the selected step (hold several for a chord) and move to the next one. **Thru** also plays them on the track's output; turn it off if your keyboard makes its own sound (the XL does unless its Local Control is off).
+- **● Rec** (or press R): while playing, the keys you play on the MIDI in keyboard are recorded into the selected track's playing pattern, on the nearest step and held as long as you held the key. Notes are added to what's already there, so you can build a part up over several loops. One Undo removes everything recorded in one run. Works on Steps tracks (on a note-pool track, keys set the pool as usual).
+- **Click** (next to the transport): a metronome on the computer, off, while recording (the default) or always, with its own volume. **Count in one bar when recording** makes Play wait four clicks before starting when Rec is on.
+- **Captured takes** are now in the **Recorder** panel (see below).
 - **Export .mid** (next to Delete) downloads the song as a MIDI file: its sections played once through, one MIDI track per sequencer track (muted tracks too), with swing and note pools as they sound. Drag it into Ableton Live's Arrangement view to arrange, mix and add audio there.
 - **Clock out:** sends MIDI clock and start/stop to the outputs you tick, so other gear follows the tempo. Set the XL's Clock to Auto or Ext-USB to sync its arpeggiator.
 - **Scale:** dims notes outside the scale and snaps notes played on your keyboard into it.
@@ -62,6 +67,44 @@ Switch between **Sound Editor** and **Sequencer** at the top of either page (or 
 - **Save** keeps songs in `data/sequences/` (one `.json` per song); **Delete** moves them to `data/sequences/deleted/`. The song you're working on is also kept in the browser, so a reload doesn't lose it. Undo with ⌘Z.
 
 Keys: Space play/stop, R record, ← → move between steps, ↑ ↓ transpose (⇧ for an octave), Enter add a note, ⌫ delete, Esc close the step editor.
+
+## Travel version (no server, works offline)
+
+The same app runs as a plain website (e.g. on GitHub Pages) in Chrome or Edge, with nothing to install: the **Sequencer**, the **Lab** and the **Recorder** (takes and audio, e.g. from the laptop's microphone). It's what you get anywhere but this Mac's own server; at home, add `?static` to the address to try it. Without the server:
+
+- **Your work is kept in that browser.** Songs, Lab instruments, patterns and recordings are saved there (IndexedDB). Clearing the browser's site data erases them, so export now and then.
+- **⇅ Transfer** (top bar, on every page, home or travel) moves songs, Lab instruments and saved patterns: **Export** where you've been working, **Import** the file where you're going. Songs and instruments replace ones with the same name; patterns already there aren't added twice. Recordings travel separately: download them (⬇).
+- **It works offline** once it has been opened online once (for a plane), and picks up changes when you're back online.
+- **Not available:** the XL Sound Editor (it needs the synth) and the AI features (they need the server). A MIDI keyboard such as the MPK mini works if the computer allows USB MIDI.
+
+## Recorder
+
+**● Recorder** in the top bar of every page (or ⌥R) opens a panel over the right side of the window; ⤢ makes it fill the window when you want to focus on recording, and ✕ or Esc closes it. It listens to its own **MIDI in** (the sequencer's keyboard by default, else the MPK mini).
+
+- **Takes:** everything you play is kept for an hour, in any view, whether or not anything is recording. Playing is split into takes wherever you stopped for 4 seconds. Each take shows a little piano roll; **▶** plays it on the sequencer's selected track, **→ Track A** puts it into the selected track's shown pattern (quantized to the track's steps; Undo in the sequencer brings back what was there), **.mid** downloads it as you played it. A take played along with the sequencer lands on the bars it was played in; one played freely starts on its first note at a guessed tempo (change **BPM** if the bars look wrong; **Song to …** sets the song to it). Longer takes get a **From bar** choice. Takes are kept in this browser only: put the good ones into a track or a .mid file.
+- **Audio:** choose your interface under **Audio in** (the first time, pick *Allow audio input…* and let Chrome use the microphone; it then picks the Scarlett) and the **Input** the XL is on (2 by default). The meter shows the level; keep it out of the red (turn the Scarlett's gain down if it says *too loud*). Recordings are 24-bit WAV files in `data/audio/`, listed under **Recordings** to play, download (⬇, or drag into Ableton) or remove. They're kept out of git and the GitHub backup, because audio is too big for it.
+  - **Any input macOS sees works:** the Mac's built-in microphone, a headset mic in a MacBook's headphone jack (the jack is otherwise output only, so it's no line input for the XL), AirPods or a USB mic. One-channel inputs record that channel; wear headphones so the mic doesn't pick up what the Mac plays. The Input choice and the measured delay are remembered per device.
+  - **● Record audio** records until you press it again.
+  - **Record audio too** (next to Record with the sequencer) saves the performance's audio as well, starting exactly at bar 1.
+  - **Measure delay** plays one short note on the XL and times how long its sound takes to come back through the Scarlett (a few milliseconds); recordings are lined up by that much. Do it once with a sound that starts quickly, and again if you change the audio setup.
+  - **Print stems** plays the song once for each XL track, on its own, and saves `Song - Track.wav` for each, all starting at bar 1 with 2 seconds for the last notes to fade. In Ableton, set the tempo to the song's, then drop them all at bar 1.
+- **Record with the sequencer:** choose a length (the song, 4–32 bars, or until you stop) and whether to count in, then **● Record**. The sequencer counts in, plays, and stops at the end; everything you play over it becomes one take (marked with a red edge), however long the rests. The click follows the sequencer's Click setting.
+
+## Lab
+
+Build your own instruments on the computer and play them from your keyboard or the Sequencer. Switch to **Lab** at the top of any page.
+
+- **An instrument is a set of modules:** oscillators, noise, filters, drive, an amp with its envelope, extra envelopes and LFOs (including a random, sample-and-hold wave), FM operators, a ring modulator, a drum kit, 3D space, and effects (chorus, delay, reverb).
+  - **FM operator:** a sine at a ratio of the note's pitch with its own envelope; audio connected *into* it bends its frequency. Connect one operator into another for bells, electric pianos and basses (try the FM Electric Piano and FM Bell starting points).
+  - **Drum kit:** synthesized drums on the standard drum notes (C1 kick, D1 snare, Eb1 clap, F#1 closed hat, Bb1 open hat, toms and cymbals), with Tune, Decay and Tone. Use the Drum Kit starting point on a sequencer drum track.
+  - **3D space:** places notes around your head on headphones (binaural). Spread scatters each note somewhere at random; Orbit circles them around you.
+  - **Ring mod:** multiplies the sound by a sine for metallic, bell-like tones. Each module is a card of settings. **Audio to** sets where a module's sound goes next (finally the Output); **Modulates** lets envelopes, LFOs, velocity and the mod wheel move other settings, with an amount slider (centre = none). **+ Add module** wires a new module into the obvious place.
+- **Patch diagram** (above the cards): modules as boxes, audio as solid cables flowing into the Output, FM as orange cables, modulation as dashed blue ones. Drag from a module's dot to another module to connect them (a modulation source asks which setting to move). Click a cable to change its amount or remove it (✕, or Delete); click a module to jump to its settings.
+- **Start from** one of the starting points in the Open menu (Init, Analog Brass, Square Bass, Soft Pad, PWM Strings, FM Electric Piano, FM Bell, Drum Kit, Space Pad, Ring Bells, Pluck Echo), then shape it.
+- **Play it** from the keyboard chosen under **MIDI in** (it picks an Akai MPK mini automatically), the on-screen keys, or the computer keyboard (A–K, with W E T Y U for black keys, Z/X for octaves). Pitch bend, the mod wheel (CC 1, the MPK's joystick pushed up) and the sustain pedal work. The first click on the page starts the sound.
+- **🎛 Learn knob:** click it, click a setting's slider, then turn a knob on your controller. That knob now moves the setting (shown as a small CC tag; click the tag while learning to forget it). Knob mappings are saved with the instrument.
+- **Save** keeps instruments in `data/instruments/` (one `.json` each); **Delete** moves one to `data/instruments/deleted/`. Undo with ⌘Z.
+- **In the Sequencer:** set a track's Out to **Computer** and pick the instrument (🎹) as its Sound. It plays with as many voices as the instrument allows, alongside the XL. The song keeps its own copy of the instrument; while you edit an instrument of the same name in the Lab, tracks using it follow your changes.
 
 ## Before you edit
 
@@ -107,12 +150,22 @@ These parts were checked against the spec and a simulated synth but not yet agai
 | Your sound types | `data/sound-types.json` | Yes |
 | AI designs | `data/ai-designs/`, one `.json` per request with all its variations | Yes |
 | Sequencer songs | `data/sequences/`, one `.json` per song (the open song is also kept in the browser) | Yes |
+| Lab instruments | `data/instruments/`, one `.json` per instrument (also saved inside songs that use them) | Yes |
 | Saved patterns (★) | `data/my-patterns/`, one `.json` per pattern | Yes |
-| Captured playing | In the browser, for an hour | Only in this browser; save takes as patterns or .mid |
+| Captured takes (Recorder) | In the browser, for an hour | Only in this browser; save takes as patterns or .mid |
+| Audio recordings | `data/audio/`, one `.wav` each (removed ones in `data/audio/deleted/`) | Yes, but not in git or the GitHub backup |
 | AI settings and API keys | `data/settings.local.json` (never committed) | Yes |
 | Backups | Any `.syx` you save: one sound, a bank of 128 (Library › Save bank), or all of My Sounds (Export) | Yes, wherever you save it |
 
 A `.syx` file can hold one sound or many.
+
+**Automatic history and backup:** `data/` is its own git repository. The editor commits it a couple of seconds after every save, so earlier versions of your sounds can always be recovered. To back it up as well, point it at a **private** repository of your own; the editor then pushes there after each save (quietly retrying later when offline):
+
+```bash
+git -C data remote add origin git@github.com:YOUR-NAME/YOUR-PRIVATE-REPO.git
+```
+
+It needs git to be able to reach that repository without a password prompt, e.g. with an SSH key added to GitHub. API keys (`settings.local.json`) and removed items (`deleted/`) are never committed.
 
 **Your `data/` folder is its own git repository**, separate from the app's. The editor creates it on first start and **commits automatically** a moment after every save, so there's a history of every sound, song and pattern (`git -C data log` to see it). Nothing is pushed anywhere; to back it up online, add a private remote of your own (e.g. a private GitHub repository) and push to it. Removed items go to `deleted/` folders, and API keys, which are never committed. Set `MKXL_DATA` to keep the data somewhere else.
 

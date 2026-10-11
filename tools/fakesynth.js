@@ -1,8 +1,8 @@
 // A stand-in microKORG XL for testing the editor without hardware: open http://localhost:8765/?sim
 // It answers the SysEx requests described in Korg's MIDI Implementation.
-import { msg, parse, encode8to7 } from '../js/sysex.js';
+import { msg, parse, encode8to7 } from '../js/xl/sysex.js';
 import { initProgram, setProgramName, slotName, setValue, PROGRAM_PARAMS, timbreParams, vocoderParams,
-  fxParams, arpParams } from '../js/params.js';
+  fxParams, arpParams } from '../js/xl/params.js';
 
 // The real synth reports "64 +/- n" values relative to 64 (signed); this stand-in assumes the same.
 const findParam = (data, id, sub) => [...PROGRAM_PARAMS, ...timbreParams(0), ...timbreParams(1), ...vocoderParams(),
@@ -32,7 +32,13 @@ function fakeInput(id, name) {
     id, name, manufacturer: 'KORG INC. (simulated)', state: 'connected', connection: 'closed',
     addEventListener: (type, fn) => { if (type === 'midimessage') listeners.add(fn); },
     async open() { this.connection = 'open'; return this; },
-    deliver(data) { if (this.connection === 'open') listeners.forEach(fn => fn({ data, timeStamp: performance.now() })); },
+    onmidimessage: null,
+    deliver(data) {
+      if (this.connection !== 'open') return;
+      const e = { data, timeStamp: performance.now() };
+      listeners.forEach(fn => fn(e));
+      this.onmidimessage?.(e); // real ports support both ways of listening
+    },
   };
 }
 const input = fakeInput('sim-in', 'KBD/KNOB');

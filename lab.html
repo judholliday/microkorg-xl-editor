@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lab · microKORG XL</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="sequencer.css">
+  <link rel="stylesheet" href="lab.css">
+  <!-- This page runs inside index.html, next to the editor and sequencer. -->
+  <script>if (top === self) location.replace('index.html' + location.search + '#lab');</script>
+</head>
+<body>
+  <header class="bar">
+    <div class="brand">
+      <span class="brand-mark">XL</span>
+      <span class="brand-name">microKORG XL</span>
+      <nav class="app-nav" aria-label="Switch view">
+        <a href="index.html#editor" data-view="editor">Sound Editor</a>
+        <a href="index.html#sequencer" data-view="sequencer">Sequencer</a>
+        <a href="index.html#lab" data-view="lab" aria-current="page">Lab</a>
+      </nav>
+    </div>
+    <span class="spacer"></span>
+    <label class="field" title="The keyboard or controller that plays the Lab instrument (e.g. your MPK mini)">MIDI in <select id="keys-in"></select>
+      <span id="keys-led" class="keys-led">●</span></label>
+    <button id="learn" class="ghost" title="Map a knob on your controller to a setting: click this, click a setting's slider, then turn the knob">🎛 Learn knob</button>
+    <button id="panic" class="ghost" title="Silence every note">Silence</button>
+    <span id="audio-status" class="status-pill warn" title="Browsers only start sound after a click">Click to enable sound</span>
+  </header>
+
+  <section class="filebar">
+    <input id="inst-name" maxlength="40" spellcheck="false" autocomplete="off" aria-label="Instrument name">
+    <span id="dirty" class="dirty" hidden>unsaved</span>
+    <button id="save" class="accent" title="Save to data/instruments/ (⌘S)">Save</button>
+    <select id="open" title="Open a saved instrument, or start from one of the starting points"></select>
+    <button id="delete" class="ghost" title="Move this instrument to data/instruments/deleted/">Delete</button>
+    <span class="spacer"></span>
+    <label class="field" title="How many notes can sound at once">Voices <input type="number" id="voices" min="1" max="16"></label>
+    <label class="field">Volume <input type="range" id="volume" min="0" max="1" step="0.01"></label>
+    <button id="undo" class="ghost small" title="Undo (⌘Z)">↶ Undo</button>
+    <button id="redo" class="ghost small" title="Redo (⇧⌘Z)">↷ Redo</button>
+  </section>
+
+  <main class="wrap">
+    <div id="notes" class="lab-notes" hidden></div>
+    <h2 class="section-head"><button class="ghost collapse" id="view-col" title="Show or hide the patch diagram">▾</button> Patch
+      <span class="hint plain">Drag from a module's dot to another module to connect them. Click a cable to change or remove it, or a module to find its settings.</span></h2>
+    <div id="patch-view" class="patch-view"></div>
+    <h2 class="section-head">Modules</h2>
+    <div id="modules" class="modules"></div>
+    <div class="add-row">
+      <select id="add-module"></select>
+      <span class="hint">Audio flows from each module to the ones listed under <b>Audio to</b>, and finally to the output. Envelopes, LFOs, velocity and the mod wheel move other settings through <b>Modulates</b>.</span>
+    </div>
+
+    <div class="lab-keys">
+      <div class="kbd-row">
+        <div class="oct"><button class="small" id="oct-up">Oct +</button><button class="small" id="oct-down">Oct −</button></div>
+        <div class="kbd" id="kbd"></div>
+        <span class="hint">Play with your controller, these keys, or your computer keyboard: <kbd>A</kbd>–<kbd>K</kbd> white keys,
+          <kbd>W</kbd> <kbd>E</kbd> <kbd>T</kbd> <kbd>Y</kbd> <kbd>U</kbd> black keys, <kbd>Z</kbd> <kbd>X</kbd> octave.</span>
+      </div>
+    </div>
+    <p class="help">Instruments you save here appear in the Sequencer: set a track's Out to <b>Computer</b> and pick the instrument as its Sound. Changes you make here are heard there straight away.</p>
+  </main>
+
+  <div id="toasts" class="toasts"></div>
+  <script type="module" src="js/lab/ui.js"></script>
+  <script type="module" src="js/core/topbar.js"></script>
+</body>
+</html>

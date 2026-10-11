@@ -40,12 +40,17 @@ export function notesOf(events, now = Infinity) {
   return notes.sort((a, b) => a.t - b.t || a.note - b.note);
 }
 
-// Groups notes into takes separated by at least `gap` ms of silence (nothing sounding).
-export function splitTakes(notes, gap = GAP_MS) {
+// Groups notes into takes separated by at least `gap` ms of silence (nothing sounding). Notes
+// starting inside one of `ranges` ([{ start, end, kind }], e.g. a performance recorded with the
+// sequencer) form one take however long their rests.
+export function splitTakes(notes, gap = GAP_MS, ranges = []) {
   const takes = [];
-  let cur = null, end = -Infinity;
+  let cur = null, end = -Infinity, curRange = null;
   for (const n of notes) {
-    if (!cur || n.t > end + gap) { cur = { notes: [] }; takes.push(cur); end = -Infinity; }
+    const range = ranges.find(r => n.t >= r.start && n.t <= r.end) || null;
+    if (!cur || range !== curRange || (!range && n.t > end + gap)) {
+      cur = { notes: [], range }; takes.push(cur); end = -Infinity; curRange = range;
+    }
     cur.notes.push(n);
     end = Math.max(end, n.t + n.dur);
   }
@@ -56,6 +61,8 @@ export function splitTakes(notes, gap = GAP_MS) {
     take.end = Math.max(...ns.map(n => n.t + n.dur));
     take.open = ns.some(n => n.open);
     take.synced = ns.every(n => n.tick !== undefined && n.run === first.run);
+    if (take.range) { take.kind = take.range.kind; take.id = take.range.start; take.open ||= !take.range.end || take.range.end === Infinity; }
+    delete take.range;
     if (take.synced) take.bpm = first.bpm;
   }
   return takes;

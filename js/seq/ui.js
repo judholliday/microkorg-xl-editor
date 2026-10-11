@@ -8,8 +8,11 @@ import { randomIdea } from './generate.js';
 import { writeMidi, renderSong as songToMidi } from './midifile.js';
 import * as C from './capture.js';
 import { STOCK } from './stock.js';
-import { portLabel, looksLikeSynthIn, looksLikeSynthOut } from '../midiports.js';
-import { msg } from '../sysex.js';
+import { portLabel, looksLikeSynthIn } from '../core/midiports.js';
+import { deviceForOut } from '../core/devices.js';
+import { storage, placeOf, stemOf } from '../core/storage.js';
+import { STATIC } from '../core/mode.js';
+import { LabSynth } from '../lab/engine.js';
 
 const $ = sel => document.querySelector(sel);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -38,7 +41,7 @@ function toast(text, kind = '') {
 let song;
 let fileName = null; // the file in data/sequences/ this song was loaded from or saved to
 let dirty = false;
-const prefs = { songOpen: true, mode: 'loop', follow: true, soundFollows: true, keysIn: null, thru: true, clockOut: [], collapsed: [], capOpen: true, ...store.get('prefs', {}) };
+const prefs = { songOpen: true, mode: 'loop', follow: true, soundFollows: true, keysIn: null, thru: true, clockOut: [], collapsed: [], click: 'rec', countIn: true, clickVol: 60, ...store.get('prefs', {}) };
 const savePrefs = () => store.set('prefs', prefs);
 let views = []; // per track: { pat (pattern shown), page, collapsed, kbdLow, lastNote }
 let sel = { t: 0, i: 0, open: true };
@@ -50,7 +53,7 @@ let sysexOk = false; // SysEx is needed to send XL sounds
 function syncViews() {
   while (views.length < song.tracks.length) {
     const ti = views.length;
-    views.push({ pat: song.tracks[ti].pattern, page: 0, collapsed: !!prefs.collapsed[ti], kbdLow: 36, lastNote: 48, ai: newAi(), ideas: newIdeas(), lib: newLib() });
+    views.push({ pat: song.tracks[ti].pattern, page: 0, collapsed: !!prefs.collapsed[ti], kbdLow: 36, lastNote: 48, ai: newAi(), ideas: newIdeas(), lib: newLib(), snd: newSnd() });
   }
   views.length = song.tracks.length;
   views.forEach((v, ti) => { v.page = Math.min(v.page, pages(ti) - 1); });
@@ -80,6 +83,7 @@ function changed({ coalesce = false } = {}) {
   dirty = true;
   saveWorking();
   renderFileBar();
+  postSeqState();
 }
 
 function restore(json) {
@@ -132,9 +136,16 @@ const sounding = []; // MIDI notes the engine has started, so Stop can silence t
 const gainOf = t => t.vol <= 100 ? (t.vol / 100) ** 2 : 1 + (t.vol - 100) / 27 * 3;
 const sendVolume = (t, port = outPort(t.out)) => { if (port) send(port, [0xb0 | (t.ch - 1), 7, t.vol]); };
 
+// The metronome rides on the engine's MIDI clock: every 24th pulse is a beat.
+let pulses = 0;
+const clickOn = () => prefs.click === 'on' || (prefs.click === 'rec' && (rec.on || !!perf));
 const sink = {
-  start(at) { for (const p of clockTargets) send(p, [0xfa], at); },
-  clock(at) { for (const p of clockTargets) send(p, [0xf8], at); },
+  start(at) { pulses = 0; for (const p of clockTargets) send(p, [0xfa], at); },
+  clock(at) {
+    if (pulses % 24 === 0 && clickOn()) synth.click(at, pulses % 96 === 0, prefs.clickVol / 100);
+    pulses++;
+    for (const p of clockTargets) send(p, [0xf8], at);
+  },
   stop() {
     const now = performance.now();
     for (const p of clockTargets) send(p, [0xfc]);
@@ -146,6 +157,11 @@ const sink = {
     for (const s of channels.values()) send(s.port, [0xb0 | s.ch, 123, 0]); // All Notes Off
     sounding.length = 0;
     synth.stopAll();
+    for (const l of labSynths.values()) l.synth.allOff(true);
+  },
+  cc(ti, cc, value, at) {
+    const t = song.tracks[ti], port = t.out === M.COMPUTER ? null : outPort(t.out);
+    if (port) send(port, [0xb0 | (t.ch - 1), cc, value], at);
   },
   note(ti, note, vel, at, dur) {
     if (skipRecorded(ti, note, at)) return;
@@ -159,9 +175,31 @@ const sink = {
 };
 const later = (at, fn) => setTimeout(() => { if (engine.playing) fn(); }, Math.max(0, at - performance.now()));
 
+// ---- Lab instruments: Computer tracks can play an instrument built in the Lab ----
+let instruments = []; // saved in data/instruments/: [{ file, name, patch }]
+const labSynths = new Map(); // track index -> { synth, json }
+
+async function refreshInstruments() {
+  try { instruments = await storage.list('instruments'); } catch { instruments = []; }
+  renderTracks();
+}
+
+// The Lab synth for a track, kept in step with the track's patch and volume.
+function labFor(ti) {
+  const t = song.tracks[ti];
+  if (!t?.inst) return null;
+  let l = labSynths.get(ti);
+  if (!l) { l = { synth: new LabSynth(synth.wake(), synth.output()), json: '' }; labSynths.set(ti, l); }
+  const json = JSON.stringify(t.inst.patch);
+  if (json !== l.json) { l.synth.setPatch(t.inst.patch); l.json = json; }
+  l.synth.setGain(gainOf(t));
+  return l.synth;
+}
+
 // Plays one note on a track's output at a time in ms (performance.now() clock).
 function playNote(ti, note, vel, at, dur) {
   const t = song.tracks[ti];
+  if (t.out === M.COMPUTER && t.inst) { const l = labFor(ti); l.play(note, vel, l.atTime(at), dur / 1000); return; }
   if (t.out === M.COMPUTER) { synth.play(t.voice, note, vel, at, dur, gainOf(t)); return; }
   const port = outPort(t.out);
   if (!port) return;
@@ -176,6 +214,7 @@ function playNote(ti, note, vel, at, dur) {
 // Plays a key through the selected track's output; returns a function that stops it.
 function noteNow(ti, note, vel) {
   const t = song.tracks[ti];
+  if (t.out === M.COMPUTER && t.inst) { const l = labFor(ti); l.noteOn(note, vel); return () => l.noteOff(note); }
   if (t.out === M.COMPUTER) return synth.hold(t.voice, note, vel, gainOf(t));
   const port = outPort(t.out);
   if (!port) return () => {};
@@ -190,12 +229,15 @@ function preview(ti, note) {
 
 // ---- Sounds: each XL track remembers its sound; other gear gets a Program Change ----
 
-// Tracks playing the XL itself (its SOUND port), which can carry a whole XL sound.
-const isXLOut = name => {
-  if (name === M.COMPUTER) return false;
-  const p = outPort(name);
-  return p ? looksLikeSynthOut(p) : /^(microKORG XL\s*)?SOUND$/i.test(name);
-};
+// The device (core/devices.js, e.g. the XL) a track's output plays, if it's one we know in depth:
+// such tracks carry a whole sound, sent when playback starts. (Still called "XL tracks" here.)
+const deviceOf = name => (name === M.COMPUTER ? null : deviceForOut(outPort(name), name));
+const isXLOut = name => !!deviceOf(name);
+// Sends a device sound ({ data }) to a track's output.
+function sendDeviceSound(t, data) {
+  const dev = deviceOf(t.out), port = outPort(t.out);
+  if (dev && port && (!dev.needsSysex || sysexOk)) send(port, dev.soundMessage(t.ch - 1, data));
+}
 
 // The editor runs alongside (index.html) and tells us what sound it holds; we send it sounds to edit.
 const soundChannel = 'BroadcastChannel' in window ? new BroadcastChannel('mkxl') : null;
@@ -204,6 +246,16 @@ let liveSound = null; // the track whose sound is on the XL now: edits in the ed
 const sameSound = (a, b) => !!a && !!b && a.data.length === b.data.length && a.data.every((x, i) => x === b.data[i]);
 
 if (soundChannel) soundChannel.onmessage = e => {
+  if (onRecorderMessage(e.data || {})) return;
+  if (e.data?.type === 'instruments-changed') { refreshInstruments(); return; }
+  if (e.data?.type === 'instrument') {
+    // An instrument being edited in the Lab: tracks using it (by name) follow along.
+    const inst = M.cleanInst({ name: e.data.name, patch: e.data.patch });
+    let any = false;
+    song.tracks.forEach(t => { if (t.inst?.name === inst?.name && JSON.stringify(t.inst.patch) !== JSON.stringify(inst.patch)) { t.inst = inst; any = true; } });
+    if (any) changed({ coalesce: true });
+    return;
+  }
   if (e.data?.type !== 'program') return;
   const sound = M.cleanSound(e.data);
   if (!sound) return;
@@ -219,7 +271,7 @@ if (soundChannel) soundChannel.onmessage = e => {
 function sendSound(ti, { show = true } = {}) {
   const t = song.tracks[ti], port = outPort(t.out);
   if (!t.sound) return;
-  if (port && sysexOk) send(port, msg.currentProgramDump(t.ch - 1, Uint8Array.from(t.sound.data)));
+  sendDeviceSound(t, t.sound.data);
   if (show) soundChannel?.postMessage({ type: 'show-program', name: t.sound.name, data: t.sound.data });
   editorSound = t.sound;
   const prev = liveSound;
@@ -256,26 +308,36 @@ const engine = new Engine({ song: () => song, now: () => performance.now(), pool
 const ticker = new Worker(URL.createObjectURL(new Blob(
   ['let id; onmessage = e => { clearInterval(id); if (e.data) id = setInterval(() => postMessage(0), e.data); };'],
   { type: 'text/javascript' })));
-ticker.onmessage = () => engine.pump();
+ticker.onmessage = () => { engine.pump(); if (engine.anchor !== sentAnchor) postTransport(); };
 
-function play() {
-  if (engine.playing) return;
+// `countIn` (true/false) overrides the Rec count-in setting (the Recorder's performances).
+function play({ countIn: force, delay = 0 } = {}) {
+  if (engine.playing) return null;
   synth.wake();
   updateClockTargets();
   engine.mode = prefs.mode;
   prepareSounds();
-  cap.run = Date.now();
+  run = Date.now();
   rec.pushed = false;
-  Object.assign(live, { pos: [], pattern: [], silent: [], poolNote: [], section: 0, bar: 0, bars: 0, barAt: performance.now() });
-  engine.play();
+  // Count-in: with Rec on, four clicks before the first beat.
+  const beatMs = 60000 / song.bpm, countIn = (typeof force === 'boolean' ? force : rec.on && prefs.countIn) ? 4 * beatMs : 0;
+  const t0 = engine.play({ delay: countIn + delay });
+  for (let k = 0; countIn && k < 4; k++) synth.click(t0 - countIn + k * beatMs, k === 0, prefs.clickVol / 100);
+  Object.assign(live, { pos: [], pattern: [], silent: [], poolNote: [], section: 0, bar: 0, bars: 0, barAt: t0, startAt: t0 });
   ticker.postMessage(25);
   $('#play').classList.add('playing');
   requestAnimationFrame(showPosition);
+  postTransport();
+  return { t0, countIn };
 }
 
 function stop() {
   engine.stop();
   ticker.postMessage(0);
+  stopAudition();
+  if (perf) { clearTimeout(perf.timer); soundChannel?.postMessage({ type: 'performance', state: 'end', wall: perf.endWall ?? Date.now() }); perf = null; }
+  if (stem) { clearTimeout(stem.timer); stem.restore(); soundChannel?.postMessage({ type: 'stem', state: 'end' }); stem = null; }
+  postTransport();
   $('#play').classList.remove('playing');
   $('#pos').textContent = '—';
   renderTracks();
@@ -284,6 +346,11 @@ function stop() {
 
 function showPosition() {
   if (!engine.playing) return;
+  if (performance.now() < live.startAt) {
+    $('#pos').textContent = `count-in ${4 - Math.floor((live.startAt - performance.now()) / (60000 / song.bpm))}`;
+    requestAnimationFrame(showPosition);
+    return;
+  }
   const beat = Math.min(4, Math.floor((performance.now() - live.barAt) / (60000 / song.bpm)) + 1);
   $('#pos').textContent = engine.mode === 'song'
     ? `§${live.section + 1} · bar ${live.bar + 1} · ${beat}`
@@ -315,6 +382,7 @@ let entered = false; // notes were entered into a step since all keys were last 
 
 function onKeys(data, at = performance.now()) {
   const type = data[0] & 0xf0;
+  if (type === 0xb0) { onCC(data[1], data[2], at); return; }
   if (type === 0x90 && data[2] > 0) keyDown(data[1], data[2], at);
   else if (type === 0x80 || type === 0x90) keyUp(data[1], at);
 }
@@ -377,7 +445,7 @@ function setRec(on) {
   $('#rec').classList.toggle('rec-on', on);
   const t = song.tracks[sel.t];
   if (on && t.mode === 'pool') toast('Recording fills in Steps tracks. On a note-pool track, the keys you hold set the pool.');
-  else if (on && !prefs.keysIn) toast('Choose your keyboard under Keys in to record.');
+  else if (on && !prefs.keysIn) toast('Choose your keyboard under MIDI in to record.');
   else if (on && !engine.playing) toast(`Rec is on: press Play and play your keyboard to record into ${t.name}.`);
 }
 
@@ -385,7 +453,7 @@ function recordDown(key, n, vel, at) {
   const ti = sel.t, t = song.tracks[ti];
   if (t.mode !== 'steps') return;
   const p = engine.positionAt(ti, at);
-  if (!p) return;
+  if (!p || engine.tickAt(at) < -M.RATES[t.rate] / 2) return; // during the count-in
   const pat = t.patterns[p.pattern], near = Math.round(p.step);
   const i = near % pat.length, s = M.stepAt(pat, i);
   M.putStep(pat, i, { notes: s ? [...new Set([...s.notes, n])].sort((a, b) => a - b) : [n],
@@ -444,7 +512,7 @@ async function initMidi() {
     }
     toast('SysEx is blocked, so XL sounds can\'t be sent with tracks. Notes still play.', 'err');
   }
-  midi.onstatechange = () => { wireInputs(); renderPorts(); renderTracks(); renderCapture(); };
+  midi.onstatechange = () => { wireInputs(); renderPorts(); renderTracks(); };
   wireInputs();
   renderPorts();
   renderTracks();
@@ -459,8 +527,6 @@ function wireInputs() {
       const d = e.data;
       if ((d[0] & 0xf0) === 0x90 && d[2] > 0) noteSeen(input, d[1]);
       if (input.name !== prefs.keysIn) return;
-      // Capture keeps everything, including playing in the Sound Editor.
-      captureEvent(d, e.timeStamp);
       // Only while the sequencer is on screen: keys played while auditioning in the Sound Editor
       // shouldn't fill in steps behind your back.
       if (onScreen()) onKeys(d, e.timeStamp);
@@ -471,7 +537,7 @@ function wireInputs() {
 
 const onScreen = () => !window.frameElement || !window.frameElement.hidden;
 
-// The light next to Keys in: green for notes on the chosen port; amber when notes arrive on a
+// The light next to MIDI in: green for notes on the chosen port; amber when notes arrive on a
 // different port (so it's clear which one to choose).
 let ledTimer = null, lastOther = null;
 function noteSeen(input, note) {
@@ -481,7 +547,7 @@ function noteSeen(input, note) {
   led.className = `keys-led ${chosen ? 'ok' : 'other'}`;
   $('#keys-last').textContent = chosen ? M.noteName(note) : `${M.noteName(note)} from ${input.name}?`;
   led.title = chosen ? `Last note ${M.noteName(note)} from ${portLabel(input)}`
-    : `A note arrived from ${portLabel(input)}, which isn't the Keys in port. Click to use it.`;
+    : `A note arrived from ${portLabel(input)}, which isn't the MIDI in port. Click to use it.`;
   clearTimeout(ledTimer);
   ledTimer = setTimeout(() => { led.className = 'keys-led'; }, 400);
 }
@@ -521,11 +587,11 @@ function renderAll() {
   renderTop();
   renderFileBar();
   renderSong();
-  renderCapture();
   renderTracks();
 }
 
 function renderTop() {
+  postSeqState();
   const setVal = (el, v) => { if (document.activeElement !== el) el.value = v; };
   setVal($('#bpm'), song.bpm);
   setVal($('#swing'), song.swing);
@@ -581,6 +647,7 @@ function paintSong() {
 }
 
 function renderTracks() {
+  postSeqState();
   syncViews();
   $('#tracks').innerHTML = song.tracks.map((_, ti) => trackHTML(ti)).join('');
   song.tracks.forEach((_, ti) => paintPlayhead(ti));
@@ -588,6 +655,7 @@ function renderTracks() {
 }
 
 function renderTrack(ti) {
+  if (ti === sel.t) postSeqState();
   const el = document.getElementById(`trk-${ti}`);
   if (!el) return renderTracks();
   // Keep the cursor in a text box that's being typed in (redraws happen while playing).
@@ -603,7 +671,7 @@ function renderTrack(ti) {
 
 function refreshGrid(ti) {
   const el = document.querySelector(`#trk-${ti} .grid-wrap`);
-  if (el) { el.innerHTML = gridHTML(ti); paintPlayhead(ti); }
+  if (el) { el.innerHTML = gridHTML(ti) + (views[ti].collapsed ? '' : ccHTML(ti)); paintPlayhead(ti); }
 }
 
 function trackHTML(ti) {
@@ -614,11 +682,21 @@ function trackHTML(ti) {
     <div class="track-head" data-act="head">${headHTML(ti)}</div>
     ${v.ai.open && !v.collapsed ? aiHTML(ti) : ''}
     ${v.lib.open && !v.collapsed ? libHTML(ti) : ''}
+    ${v.snd.open && !v.collapsed ? sndHTML(ti) : ''}
     ${v.ideas.list.length && !v.collapsed ? ideasHTML(ti) : ''}
     ${editing ? editorHTML(ti) : ''}
-    <div class="grid-wrap">${gridHTML(ti)}</div>
+    <div class="grid-wrap">${gridHTML(ti)}${v.collapsed ? '' : ccHTML(ti)}</div>
     ${t.mode === 'pool' ? poolHTML(ti) : ''}
   </section>`;
+}
+
+// Test voices, then Lab instruments (plus the track's own, if it isn't saved in the Lab).
+function soundOptions(t) {
+  const lab = instruments.map(x => x.name);
+  if (t.inst && !lab.includes(t.inst.name)) lab.unshift(t.inst.name);
+  const cur = t.inst ? `lab:${t.inst.name}` : t.voice;
+  return `<optgroup label="Test sounds">${options(M.VOICES.map(x => [x, x]), cur)}</optgroup>`
+    + (lab.length ? `<optgroup label="Lab instruments">${options(lab.map(n => [`lab:${n}`, `🎹 ${n}`]), cur)}</optgroup>` : '');
 }
 
 const options = (list, current) => list.map(([value, label]) =>
@@ -650,11 +728,12 @@ function headHTML(ti) {
       </span>
       <label class="field">Out <select data-act="out" class="${outList.at(-1)[1].endsWith('(not connected)') && t.out === outList.at(-1)[0] ? 'missing' : ''}">${options(outList, t.out)}</select></label>
       ${t.out === M.COMPUTER
-        ? `<label class="field" title="Built-in test sound">Sound <select data-act="voice">${options(M.VOICES.map(x => [x, x]), t.voice)}</select></label>`
+        ? `<label class="field" title="A built-in test sound, or an instrument you built in the Lab">Sound <select data-act="voice">${soundOptions(t)}</select></label>`
         : `<label class="field">Ch <select data-act="ch">${options(Array.from({ length: 16 }, (_, c) => [c + 1, c + 1]), t.ch)}</select></label>`}
       ${isXLOut(t.out) ? `<button class="ghost sound-btn${liveSound === ti ? ' live' : ''}" data-act="sound" title="${t.sound
           ? 'This track\'s XL sound, sent to the XL when playback starts. Click to send it now and edit it in the Sound Editor; your edits there are remembered.'
-          : `Remember the sound the Sound Editor has now${editorSound ? ` (${esc(editorSound.name)})` : ''}`}">🎛 ${t.sound ? esc(t.sound.name || 'Sound') : `Use ${editorSound ? `“${esc(editorSound.name)}”` : 'editor sound'}`}</button>`
+          : `Remember the sound the Sound Editor has now${editorSound ? ` (${esc(editorSound.name)})` : ''}`}">🎛 ${t.sound ? esc(t.sound.name || 'Sound') : `Use ${editorSound ? `“${esc(editorSound.name)}”` : 'editor sound'}`}</button>
+        <button class="${v.snd.open ? 'on' : 'ghost'} small" data-act="snd" title="Try other XL sounds on this track while it plays">Browse</button>`
         : t.out !== M.COMPUTER ? `<label class="field" title="Program Change sent to this instrument when playback starts (and when you change it)">Prog
           <select data-act="prog"><option value="">—</option>${Array.from({ length: 128 }, (_, n) => `<option value="${n}" ${t.program === n ? 'selected' : ''}>${n + 1}</option>`).join('')}</select></label>` : ''}
       <span class="seg-btn">
@@ -671,6 +750,175 @@ function headHTML(ti) {
       <button data-act="mute" class="${t.mute ? 'm-on' : ''}" title="Mute: silence this track">M</button>
       <button data-act="solo" class="${t.solo ? 's-on' : ''}" title="Solo: hear only soloed tracks">S</button>
     </span>`;
+}
+
+
+
+// ---- Sound browser: try XL sounds on a track while it plays ----
+// Clicking a sound sends it straight to the XL (nothing is saved); Use keeps it for the track;
+// closing the browser puts the track's own sound back.
+
+const newSnd = () => ({ open: false, q: '', type: 'auto', bank: 'all', trying: null });
+let sounds = null; // loaded the first time a browser opens
+// The sound library of a track's device (its sound types, bank names...).
+const libOf = ti => deviceOf(song.tracks[ti].out)?.sounds || { ROLE_TYPES: {}, bankLabel: b => b, MY_BANK: '', load: async () => [] };
+
+function sndItems(ti) {
+  const t = song.tracks[ti], f = views[ti].snd, role = M.guessRole(t), { ROLE_TYPES, bankLabel, MY_BANK } = libOf(ti);
+  const want = f.type === 'auto' ? ROLE_TYPES[role] || [] : f.type === 'all' ? null : [f.type];
+  const q = f.q.trim().toLowerCase();
+  return (sounds || []).filter(x => (!want || want.includes(x.type)) && (f.bank === 'all' || x.bank === f.bank)
+    && (!q || `${x.name} ${x.type} ${bankLabel(x.bank)}`.toLowerCase().includes(q)))
+    // Best-suited types first, then My Sounds, then the order of the files.
+    .map((x, k) => ({ x, k, r: (want ? want.indexOf(x.type) : 0) * 2 + (x.bank === MY_BANK ? 0 : 1) }))
+    .sort((a, b) => a.r - b.r || a.k - b.k).map(({ x }) => x);
+}
+
+function sndRows(ti) {
+  const { bankLabel } = libOf(ti);
+  if (!sounds) return '<div class="hint">Loading sounds…</div>';
+  const items = sndItems(ti), f = views[ti].snd;
+  if (!items.length) return '<div class="hint">Nothing matches. Try Type: All.</div>';
+  return items.slice(0, 400).map(x => `<div class="lib-item snd-item${f.trying === x.key ? ' on' : ''}" data-act="snd-try" data-key="${esc(x.key)}" title="Send it to the XL to hear it">
+    <span class="lib-name">${esc(x.name.trim() || '—')}</span>
+    <span class="lib-meta">${esc(x.type)}</span>
+    <span class="lib-meta">${esc(bankLabel(x.bank))}</span><span></span>
+  </div>`).join('') + (items.length > 400 ? `<div class="hint">${items.length - 400} more: search to narrow it down.</div>` : '');
+}
+
+function sndHTML(ti) {
+  const { bankLabel } = libOf(ti);
+  const t = song.tracks[ti], f = views[ti].snd, role = M.guessRole(t);
+  const types = [...new Set((sounds || []).map(x => x.type))].sort();
+  const banks = [...new Set((sounds || []).map(x => x.bank))];
+  const trying = f.trying && sounds?.find(x => x.key === f.trying);
+  return `<div class="lib-panel snd-panel">
+    <div class="ai-row">
+      <span class="ai-mark">🎛 Sounds</span>
+      <input class="ai-msg" data-act="snd-q" value="${esc(f.q)}" placeholder="Search sound names" spellcheck="false">
+      <label class="field">Type <select data-act="snd-type">${options([['auto', `Suits ${M.ROLES[role] || role}`], ['all', 'All'], ...types.map(x => [x, x])], f.type)}</select></label>
+      <label class="field">Bank <select data-act="snd-bank">${options([['all', 'All'], ...banks.map(b => [b, bankLabel(b)])], f.bank)}</select></label>
+      <button class="ghost small x" data-act="snd" title="Close and go back to the track's own sound">✕</button>
+    </div>
+    <div class="lib-list" tabindex="0" data-act="snd-list">${sndRows(ti)}</div>
+    <div class="ai-row">
+      ${trying ? `<span>Trying <b>${esc(trying.name.trim())}</b></span>
+        <button class="accent small" data-act="snd-use">Use for ${esc(t.name)}</button>
+        <button class="ghost small" data-act="snd-back">Back to ${esc(t.sound?.name || 'the track\'s sound')}</button>` : ''}
+      <span class="hint">${!sysexOk ? 'SysEx is blocked, so sounds can\'t be sent to the XL. ' : ''}Click a sound to hear it on the XL${engine.playing ? '' : ' (press Play to hear it with the song)'}; ↑ ↓ step through the list. Nothing changes until you click Use.</span>
+    </div>
+  </div>`;
+}
+
+// Sends sound data to a track's XL without keeping it.
+function trySound(ti, x) {
+  sendDeviceSound(song.tracks[ti], x.data);
+  views[ti].snd.trying = x.key;
+  renderTrack(ti);
+  // Keep the list focused (so ↑ ↓ carry on) and the sound being tried in view.
+  document.querySelector(`#trk-${ti} [data-act="snd-list"]`)?.focus({ preventScroll: true });
+  document.querySelector(`#trk-${ti} .snd-item.on`)?.scrollIntoView({ block: 'nearest' });
+}
+
+// Puts the track's own sound back on the XL (closing the browser, or Back).
+function endTrying(ti) {
+  const f = views[ti].snd;
+  if (!f.trying) return;
+  f.trying = null;
+  if (song.tracks[ti].sound) sendSound(ti, { show: false });
+}
+
+async function openSounds(ti) {
+  views[ti].snd.open = true;
+  renderTrack(ti);
+  if (!sounds) {
+    sounds = await libOf(ti).load().catch(() => []);
+    if (!sounds.length) toast('No sounds found. Is serve.py running?', 'err');
+    views.forEach((v, k) => { if (v.snd.open) renderTrack(k); });
+  }
+  document.querySelector(`#trk-${ti} [data-act="snd-q"]`)?.focus();
+}
+
+// ---- Controller lanes: a MIDI Control Change value per step, e.g. a filter sweep ----
+
+// Common controller names. The XL's knobs send whatever its Global settings assign, so Learn
+// (turn a knob on the synth) is the sure way to find one.
+const CC_NAMES = { 1: 'Mod wheel', 2: 'Breath', 5: 'Portamento time', 7: 'Volume', 10: 'Pan', 11: 'Expression',
+  71: 'Resonance', 72: 'Release', 73: 'Attack', 74: 'Cutoff', 75: 'Decay', 76: 'Vibrato rate', 77: 'Vibrato depth' };
+const ccName = n => CC_NAMES[n] ? `CC ${n} · ${CC_NAMES[n]}` : `CC ${n}`;
+const CC_LIST = [...Object.keys(CC_NAMES).map(Number), ...Array.from({ length: 120 }, (_, n) => n).filter(n => !CC_NAMES[n] && n !== 64 && n !== 0 && n !== 32)];
+let learning = null; // { ti, l }: the lane waiting for a knob to be turned
+
+// A new pattern from an idea or a take keeps the lanes the old one had.
+const keepLanes = (old, fresh) => (old?.cc?.length && !fresh.cc ? { ...fresh, cc: M.copyPattern(old).cc } : fresh);
+
+function ccHTML(ti) {
+  const t = song.tracks[ti], v = views[ti], pat = viewPattern(ti), lanes = pat.cc || [];
+  const PS = pageSize(ti), start = v.page * PS, drums = isDrums(t);
+  const cols = drums ? `76px repeat(${PS}, minmax(${PS > 16 ? 12 : 20}px, 1fr))` : `repeat(${PS}, minmax(${PS > 16 ? 18 : 30}px, 1fr))`;
+  const rows = lanes.map((lane, l) => {
+    const cells = Array.from({ length: PS }, (_, k) => {
+      const i = start + k, set = lane.steps.find(x => x.i === i), shown = set ? set.v : lane.glide ? M.laneValue(lane, i, pat.length) : null;
+      const cls = `cc-cell${i % 4 === 0 ? ' beat' : ''}${i >= pat.length ? ' beyond' : ''}${set ? ' set' : ''}`;
+      return `<div class="${cls}" data-act="cc-cell" data-l="${l}" data-s="${i}" title="Step ${i + 1}${shown !== null ? `: ${shown}` : ''}">${
+        shown !== null ? `<i style="height:${Math.round(shown / 127 * 100)}%"></i>` : ''}</div>`;
+    }).join('');
+    const isLearning = learning?.ti === ti && learning.l === l;
+    return `<div class="cc-head">
+        <select data-act="cc-num" data-l="${l}" title="Which controller this lane sends">${options(CC_LIST.map(n => [n, ccName(n)]), lane.cc)}</select>
+        <button class="small ${isLearning ? 'on' : 'ghost'}" data-act="cc-learn" data-l="${l}" title="Turn a knob on your keyboard to use the controller it sends">${isLearning ? 'Turn a knob…' : 'Learn'}</button>
+        <label class="field" title="Move smoothly from each value you set to the next, instead of jumping"><input type="checkbox" data-act="cc-glide" data-l="${l}" ${lane.glide ? 'checked' : ''}> Glide</label>
+        <button class="ghost small" data-act="cc-del" data-l="${l}" title="Remove this lane">✕</button>
+      </div>
+      <div class="cc-row" style="grid-template-columns:${cols}">${drums ? '<div></div>' : ''}${cells}</div>`;
+  }).join('');
+  const room = lanes.length < M.MAX_CC_LANES;
+  if (!lanes.length && sel.t !== ti) return '';
+  return `<div class="cc-lanes">${rows}
+    <div class="cc-tools">
+      ${room ? `<button class="ghost small" data-act="cc-add" title="Send a MIDI controller (e.g. filter cutoff) from this pattern's steps">+ Controller lane</button>` : ''}
+      ${lanes.length ? `<span class="hint">Click or drag in a lane to set values (higher = more); ⌥-drag to clear.${t.out === M.COMPUTER
+        ? ' Lanes go to MIDI instruments; the computer sound ignores them.' : ''} With Rec on, turning a knob while playing records it.</span>` : ''}
+    </div>
+  </div>`;
+}
+
+// Sets or clears one lane value from a pointer position in a cell.
+function setCC(ti, l, cell, y, clear) {
+  const lane = viewPattern(ti).cc?.[l], i = +cell.dataset.s;
+  if (!lane) return;
+  lane.steps = lane.steps.filter(x => x.i !== i);
+  if (!clear) {
+    const r = cell.getBoundingClientRect();
+    lane.steps.push({ i, v: Math.max(0, Math.min(127, Math.round((1 - (y - r.top) / r.height) * 127))) });
+    lane.steps.sort((a, b) => a.i - b.i);
+  }
+}
+
+// Knob turns from MIDI in: Learn picks up the controller; while recording they go into a lane.
+function onCC(cc, value, at) {
+  if (cc === 64 || cc === 0 || cc === 32 || cc >= 120) return; // pedal, bank select, channel modes
+  if (learning) {
+    const { ti, l } = learning, pat = viewPattern(ti), lane = pat.cc?.[l];
+    learning = null;
+    if (lane && !pat.cc.some(x => x !== lane && x.cc === cc)) { lane.cc = cc; changed(); toast(`Lane set to ${ccName(cc)}.`, 'ok'); }
+    renderTrack(ti);
+    return;
+  }
+  if (!rec.on || !engine.playing) return;
+  const ti = sel.t, t = song.tracks[ti], p = engine.positionAt(ti, at);
+  if (!p || engine.tickAt(at) < -M.RATES[t.rate] / 2) return;
+  const pat = t.patterns[p.pattern];
+  let lane = pat.cc?.find(x => x.cc === cc);
+  if (!lane) {
+    if ((pat.cc?.length || 0) >= M.MAX_CC_LANES) return;
+    lane = { cc, glide: true, steps: [] };
+    pat.cc = [...(pat.cc || []), lane];
+  }
+  const i = Math.round(p.step) % pat.length;
+  lane.steps = [...lane.steps.filter(x => x.i !== i), { i, v: value }].sort((a, b) => a.i - b.i);
+  changed({ coalesce: 'rec' });
+  renderTrack(ti);
 }
 
 // ---- Drum tracks: a drum-machine grid (one row per drum) and a kit of pads in the step editor ----
@@ -701,8 +949,8 @@ function lanesHTML(ti) {
   const rows = lanesOf(ti).map(note => `<div class="lane-name" data-act="lane-name" data-n="${note}" title="Click to hear it">${esc(kitName(note))}</div>`
     + cols.map(i => {
       const s = at.get(i), on = !!s && s.notes.includes(note);
-      const cls = `lane-cell${i % 4 === 0 ? ' beat' : ''}${i >= pat.length ? ' beyond' : ''}${on ? ' on' : ''}${on && s.vel >= 110 ? ' accent' : ''}${on && s.vel < 70 ? ' soft' : ''}`;
-      return `<div class="${cls}" data-act="lane" data-n="${note}" data-s="${i}"></div>`;
+      const cls = `lane-cell${i % 4 === 0 ? ' beat' : ''}${i >= pat.length ? ' beyond' : ''}${on ? ' on' : ''}${on && s.vel >= 110 ? ' accent' : ''}${on && s.vel < 70 ? ' soft' : ''}${on && s.prob ? ' chance' : ''}`;
+      return `<div class="${cls}" data-act="lane" data-n="${note}" data-s="${i}"${on && (s.prob || s.rat) ? ` title="${[s.prob && `${s.prob}% chance`, s.rat && `ratchet ×${s.rat}`].filter(Boolean).join(', ')}"` : ''}>${on && s.rat ? s.rat : ''}</div>`;
     }).join('')).join('');
   const shown = lanesOf(ti);
   const pager = n > 1 ? `<div class="pages">Steps ${Array.from({ length: n }, (_, k) =>
@@ -750,9 +998,10 @@ function gridHTML(ti) {
     const fullEnd = Math.min(c + s.len, pat.length), stop = Math.min(fullEnd, end), span = stop - i;
     const drums = M.guessRole(t) === 'drums';
     const label = t.mode === 'pool' ? '♪' : s.notes.length ? [...new Set(s.notes.map(drums ? M.drumName : M.noteName))].join(span > 1 ? ' ' : '<br>') : '—';
-    blocks += `<div class="blk${c !== i ? ' cont' : ''}${span === 1 ? ' single' : ''}${sel.t === ti && sel.i === c ? ' sel' : ''}"
+    blocks += `<div class="blk${c !== i ? ' cont' : ''}${span === 1 ? ' single' : ''}${s.prob ? ' chance' : ''}${sel.t === ti && sel.i === c ? ' sel' : ''}"
       style="grid-column:${i - start + 1} / span ${span}" data-act="blk" data-s="${c}">
       <span class="num">${c + 1}${s.len > 1 ? ` · ${s.len} steps` : ''}</span>
+      ${s.prob || s.rat ? `<span class="badges">${s.prob ? `${s.prob}%` : ''}${s.prob && s.rat ? ' ' : ''}${s.rat ? `×${s.rat}` : ''}</span>` : ''}
       <span class="note"${s.notes.length > 1 && span === 1 && t.mode !== 'pool' ? ' style="font-size:10px;top:15px"' : ''}>${label}</span>
       <div class="vel" style="height:${Math.round(s.vel / 127 * 24)}px"></div>
       ${stop === fullEnd ? `<div class="gate" style="left:${(span - 1) / span * 100}%;width:${s.gate / span}%"></div>
@@ -788,7 +1037,9 @@ function editorHTML(ti) {
     ${s ? `
       <label class="field" title="How many steps the note is held across">Hold <input type="number" data-act="e-len" min="1" max="${M.maxLen(pat, sel.i)}" value="${s.len}"> steps</label>
       <label class="field">Velocity <input type="range" data-act="e-vel" min="1" max="127" value="${s.vel}"> <span class="e-vel">${s.vel}</span></label>
-      <label class="field" title="How much of its last step the note sounds for">Gate <input type="range" data-act="e-gate" min="1" max="100" value="${s.gate}"> <span class="e-gate">${s.gate}%</span></label>`
+      <label class="field" title="How much of its last step the note sounds for">Gate <input type="range" data-act="e-gate" min="1" max="100" value="${s.gate}"> <span class="e-gate">${s.gate}%</span></label>
+      <label class="field" title="How often this step plays: below 100%, it's left out at random">Chance <select data-act="e-prob">${options(M.PROBS.map(p => [p, `${p}%`]), s.prob || 100)}</select></label>
+      <label class="field" title="Repeat the note this many times across its length (a roll or stutter)">Ratchet <select data-act="e-rat">${options([[1, 'off'], [2, '×2'], [3, '×3'], [4, '×4']], s.rat || 1)}</select></label>`
     : `<span class="hint">Empty step. ${pool ? 'Tick On to make it fire.' : isDrums(t) ? 'Click a drum below, or hit a pad.' : 'Click a key below or play one to add a note.'}</span>`}
     <button class="ghost small x" data-act="e-close" title="Hide the editor (Esc)">✕</button>
     ${pool ? keyboardHTML(ti, n => t.pool.notes.includes(n), 'pool-key')
@@ -856,7 +1107,7 @@ function addIdeas(ti, names, fresh) {
 function applyIdea(ti, k) {
   const t = song.tracks[ti], v = views[ti], o = v.ideas.list[k];
   if (!o) return;
-  for (const [name, p] of Object.entries(o.patterns)) t.patterns[name] = M.copyPattern(p);
+  for (const [name, p] of Object.entries(o.patterns)) t.patterns[name] = keepLanes(t.patterns[name], M.copyPattern(p));
   if (o.pool?.length && t.mode === 'pool') t.pool.notes = [...o.pool];
   t.rate = o.rate || v.ideas.before.rate;
   const names = Object.keys(o.patterns);
@@ -932,7 +1183,7 @@ function ideasHTML(ti) {
 let myPatterns = [];
 async function loadMine() {
   try {
-    myPatterns = (await api('/api/patterns')).map(p => ({
+    myPatterns = (await storage.list('patterns')).map(p => ({
       ...p, ...M.cleanPattern(p), role: M.ROLES[p.role] ? p.role : 'lead', tags: Array.isArray(p.tags) ? p.tags : [],
       key: p.key && M.SCALES[p.key.type] ? p.key : null, rate: M.RATES[p.rate] ? p.rate : '1/16', mode: p.mode === 'pool' ? 'pool' : 'steps',
     }));
@@ -1019,8 +1270,8 @@ async function starPattern(ti) {
   const pattern = { name, role, tags: [song.name].filter(n => n && n !== 'Untitled'), bpm: song.bpm, rate: t.rate, mode: t.mode,
     key: role === 'drums' ? null : song.scale, length: pat.length, steps, ...(t.mode === 'pool' ? { pool: t.pool.notes } : {}) };
   try {
-    const { file } = await api('/api/patterns', { pattern });
-    toast(`★ Saved to your library (data/my-patterns/${file})`, 'ok');
+    const file = await storage.save('patterns', pattern);
+    toast(`★ Saved to your library (${placeOf('patterns', file)})`, 'ok');
     await loadMine();
   } catch (err) {
     toast(`Couldn't save: ${err.message}`, 'err');
@@ -1029,8 +1280,8 @@ async function starPattern(ti) {
 
 async function deleteMine(file) {
   const p = myPatterns.find(x => x.file === file);
-  if (!p || !confirm(`Remove "${p.name}" from your library? (It's moved to data/my-patterns/deleted/.)`)) return;
-  try { await api('/api/patterns/delete', { file }); } catch (err) { toast(`Couldn't remove: ${err.message}`, 'err'); }
+  if (!p || !confirm(`Remove "${p.name}" from your library?${STATIC ? '' : ' (It\'s moved to data/my-patterns/deleted/.)'}`)) return;
+  try { await storage.remove('patterns', file); } catch (err) { toast(`Couldn't remove: ${err.message}`, 'err'); }
   await loadMine();
 }
 
@@ -1039,7 +1290,8 @@ async function deleteMine(file) {
 
 let aiAvailable = false, aiProblem = 'Checking the AI provider…';
 function checkAiStatus() {
-  fetch('/api/status').then(r => r.json()).then(j => {
+  if (STATIC) { aiProblem = 'The AI isn\'t available in the travel version: it needs the editor\'s server at home.'; return; }
+  fetch('api/status').then(r => r.json()).then(j => {
     aiAvailable = !!j.ai;
     aiProblem = j.ai ? '' : `${j.problem} (AI settings are in the Sound Editor's AI Designer tab.)`;
     renderTracks();
@@ -1103,7 +1355,7 @@ async function generate(ti, { surprise = false } = {}) {
     if (el) el.textContent = `Writing… ${Math.round((performance.now() - ai.started) / 1000)}s`;
   }, 500);
   try {
-    const r = await fetch('/api/pattern', {
+    const r = await fetch('api/pattern', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ai.ctrl.signal,
       body: JSON.stringify({ message: surprise ? '' : ai.message, task, context, patterns: names, options: n, pool: t.mode === 'pool' }),
     });
@@ -1175,125 +1427,129 @@ function aiHTML(ti) {
   </div>`;
 }
 
+
 // ---------------------------------------------------------------------------------------------
-// Capture: everything played on the Keys in keyboard is kept for an hour, split into takes at
-// silences, so an idea played before you thought to record isn't lost. Kept in this browser.
+// The Recorder panel (recorder.html) keeps what you play; it learns the tempo and position from
+// us, and asks us to play takes, put them into tracks and record performances (see js/rec/ui.js).
 
-const CAP_KEEP_MS = 60 * 60 * 1000, CAP_MAX_EVENTS = 20000;
-const cap = { events: store.get('capture', []), run: 0, bpm: new Map(), fromBar: new Map(), est: new Map(), playing: null };
-let capSaveTimer = null, capRenderTimer = null;
+let run = 0; // which playback run notes belong to
+let sentAnchor = null, perf = null, stem = null, seqStateTimer = null, lastSeqState = '';
 
-function captureEvent(d, at = performance.now()) {
-  const type = d[0] & 0xf0;
-  let e;
-  if (type === 0x90 && d[2] > 0) e = { type: 'on', n: d[1], v: d[2] };
-  else if (type === 0x80 || type === 0x90) e = { type: 'off', n: d[1], v: 0 };
-  else if (type === 0xb0 && d[1] === 64) e = { type: 'ped', n: d[2] >= 64 ? 1 : 0, v: 0 };
-  else return;
-  e.t = Math.round(performance.timeOrigin + at);
-  if (engine.playing) Object.assign(e, { tick: Math.round(engine.tickAt(at) * 10) / 10, run: cap.run, bpm: song.bpm });
-  cap.events.push(e);
-  const old = e.t - CAP_KEEP_MS;
-  if (cap.events[0].t < old || cap.events.length > CAP_MAX_EVENTS) {
-    cap.events = cap.events.filter(x => x.t >= old).slice(-CAP_MAX_EVENTS);
-  }
-  clearTimeout(capSaveTimer);
-  capSaveTimer = setTimeout(() => store.set('capture', cap.events), 1500);
-  if (!capRenderTimer) capRenderTimer = setTimeout(() => { capRenderTimer = null; renderCapture(); }, 400);
-  clearTimeout(cap.endTimer);
-  cap.endTimer = setTimeout(renderCapture, C.GAP_MS + 300); // the take is finished: show it as such
+// The end of a recorded run: no new notes, but the last ones ring out for `tail` ms before Stop.
+function endRun(run, tail) {
+  if (!engine.playing) return;
+  engine.halt();
+  run.endWall = Date.now();
+  run.timer = setTimeout(stop, tail);
 }
 
-// Newest first. A take is still going (`live`) until the silence that ends it has passed.
-const allTakes = () => C.splitTakes(C.notesOf(cap.events, Date.now())).reverse()
-  .map(t => ({ ...t, live: t.open || Date.now() - t.end < C.GAP_MS }));
-const findTake = id => allTakes().find(t => t.id === id);
-
-// A take's tempo: the sequencer's when played along, else what you set, else a guess.
-function takeBpm(take) {
-  if (take.synced) return take.bpm;
-  if (cap.bpm.has(take.id)) return cap.bpm.get(take.id);
-  if (!take.live && cap.est.has(take.id)) return cap.est.get(take.id);
-  const bpm = C.estimateTempo(take.notes, song.bpm) ?? song.bpm;
-  if (!take.live) cap.est.set(take.id, bpm);
-  return bpm;
+function postTransport() {
+  sentAnchor = engine.anchor;
+  const a = engine.anchor;
+  soundChannel?.postMessage({ type: 'transport', playing: engine.playing, run,
+    anchor: a ? { wall: performance.timeOrigin + a.ms, tick: a.tick, bpm: a.bpm } : null });
+}
+// What the Recorder needs to show its "→ track" buttons; sent when it changes.
+function postSeqState(force = false) {
+  clearTimeout(seqStateTimer);
+  seqStateTimer = setTimeout(() => {
+    const t = song.tracks[sel.t], v = views[sel.t];
+    if (!t || !v) return;
+    const state = { type: 'seq-state', bpm: song.bpm, mode: prefs.mode, songBars: song.song.reduce((n, x) => n + x.bars, 0), songName: song.name,
+      track: { name: t.name, pattern: v.pat, rate: t.rate, mode: t.mode, ch: t.ch },
+      xlTracks: song.tracks.map((x, ti) => ({ ti, name: x.name, ch: x.ch })).filter(x => isXLOut(song.tracks[x.ti].out)) };
+    const json = JSON.stringify(state);
+    if (force || json !== lastSeqState) { lastSeqState = json; soundChannel?.postMessage(state); }
+  }, force ? 0 : 150);
 }
 
-const ago = ms => {
-  const s = Math.round((Date.now() - ms) / 1000);
-  return s < 10 ? 'just now' : s < 60 ? `${s} s ago` : s < 3600 ? `${Math.round(s / 60)} min ago` : 'an hour ago';
-};
-const clock = ms => { const s = Math.round(ms / 1000); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
-
-// A tiny piano roll of the take.
-function rollSVG(take) {
-  const span = Math.max(1, take.end - take.start);
-  const lo = Math.min(...take.notes.map(n => n.note)), hi = Math.max(...take.notes.map(n => n.note));
-  const rows = Math.max(12, hi - lo + 1), top = hi + Math.floor((rows - (hi - lo + 1)) / 2);
-  return `<svg class="roll" viewBox="0 0 1000 ${rows}" preserveAspectRatio="none" aria-hidden="true">${take.notes.map(n =>
-    `<rect x="${((n.t - take.start) / span * 1000).toFixed(1)}" y="${top - n.note}" width="${Math.max(4, n.dur / span * 1000).toFixed(1)}" height="1"/>`).join('')}</svg>`;
-}
-
-function renderCapture() {
-  const el = $('#capture');
-  el.hidden = !prefs.capOpen;
-  $('#cap-col').textContent = prefs.capOpen ? '▾' : '▸';
-  const takes = allTakes();
-  const keys = inputs().find(p => p.name === prefs.keysIn);
-  $('#cap-sum').textContent = !prefs.keysIn ? 'Choose a keyboard under Keys in to capture what you play'
-    : `${takes.length ? `${takes.length} take${takes.length > 1 ? 's' : ''} · ` : ''}everything played on ${keys ? portLabel(keys) : prefs.keysIn} is kept for an hour`;
-  if (!prefs.capOpen) return;
-  // Don't redraw under a box being typed in.
-  if (el.contains(document.activeElement) && document.activeElement.matches('input, select')) return;
-  if (!takes.length) {
-    el.innerHTML = `<div class="hint">Nothing yet. Play anything on your keyboard, here or in the Sound Editor, with or without the sequencer
-      playing, and it shows up here as a take. Then put it into a track or save it as a .mid file.</div>`;
-    return;
-  }
-  const t = song.tracks[sel.t], v = views[sel.t], rate = M.RATES[t.rate], perPat = C.barsPerPattern(rate);
-  el.innerHTML = takes.map(take => {
-    const bpm = takeBpm(take), items = C.takeTicks(take, bpm), bars = C.takeBars(items);
-    const from = Math.min(cap.fromBar.get(take.id) || 0, bars - 1);
-    const playing = cap.playing?.id === take.id;
-    const fit = Math.min(perPat, bars - from);
-    return `<div class="take${take.live ? ' open' : ''}" data-id="${take.id}">
-      <button class="ghost play-take" data-act="cap-play" title="${playing ? 'Stop' : `Play it on ${esc(t.name)}'s sound`}">${playing ? '■' : '▶'}</button>
-      ${rollSVG(take)}
-      <span class="take-info"><span><b>${take.live ? 'Playing now…' : ago(take.end)}</b> · ${clock(take.end - take.start)} · ${take.notes.length} note${take.notes.length > 1 ? 's' : ''}</span>
-        <span class="hint">${take.synced ? `played along at ${bpm} BPM` : 'free time'} · ${bars} bar${bars > 1 ? 's' : ''}</span></span>
-      ${take.synced ? '' : `<label class="field" title="The take's tempo, first note on beat 1. It's a guess; change it if the bars look wrong.">BPM
-        <input type="number" data-act="cap-bpm" min="40" max="240" value="${bpm}"></label>
-        ${bpm !== song.bpm ? `<button class="ghost small" data-act="cap-tempo" title="Change the song's tempo to the take's">Song to ${bpm}</button>` : ''}`}
-      ${bars > perPat ? `<label class="field" title="A pattern holds ${perPat} bar${perPat > 1 ? 's' : ''} of ${t.rate} steps">From bar
-        <select data-act="cap-from">${Array.from({ length: bars }, (_, b) => `<option value="${b}" ${b === from ? 'selected' : ''}>${b + 1}</option>`).join('')}</select></label>` : ''}
-      <span class="spacer"></span>
-      <button data-act="cap-use" ${t.mode === 'pool' ? 'disabled' : ''} title="${t.mode === 'pool'
-        ? 'Select a Steps track to put this in'
-        : `Replace ${esc(t.name)} pattern ${v.pat} with ${fit === bars ? 'this take' : `bars ${from + 1}–${from + fit}`}, quantized to ${t.rate} steps (Undo brings the old one back)`}">→ ${esc(t.name)} ${v.pat}</button>
-      <button class="ghost" data-act="cap-mid" title="Download this take as a MIDI file, as played (not quantized)">.mid</button>
-      <button class="ghost small" data-act="cap-del" title="Forget this take">✕</button>
-    </div>`;
-  }).join('') + `<div class="hint">→ puts a take into the selected track's shown pattern. Select another track to change where it goes.
-    <button class="ghost small" data-act="cap-clear">Forget all</button></div>`;
-}
-
-function playTake(take) {
-  stopTake();
+// Playing a take on the selected track (chunks scheduled ahead, so it can be stopped).
+let audition = null;
+function stopAudition() { if (audition) clearInterval(audition.timer); audition = null; }
+function auditionTake(notes) {
+  stopAudition();
   synth.wake();
-  const ti = sel.t, notes = take.notes, offset = performance.now() + 60 - take.start;
+  const ti = sel.t, base = performance.now() + 60, list = [...notes].sort((a, b) => a.dt - b.dt);
   let k = 0;
   const pump = () => {
     const horizon = performance.now() + 200;
-    for (; k < notes.length && notes[k].t + offset < horizon; k++) playNote(ti, notes[k].note, notes[k].vel, notes[k].t + offset, notes[k].dur);
-    if (k >= notes.length && performance.now() > take.end + offset) { stopTake(); renderCapture(); }
+    for (; k < list.length && base + list[k].dt < horizon; k++) playNote(ti, list[k].note, list[k].vel, base + list[k].dt, list[k].dur);
+    if (k >= list.length) stopAudition();
   };
-  cap.playing = { id: take.id, timer: setInterval(pump, 50) };
+  audition = { timer: setInterval(pump, 50) };
   pump();
 }
-function stopTake() {
-  if (cap.playing) clearInterval(cap.playing.timer);
-  cap.playing = null;
+
+function takeToTrack({ items, fromBar, bpm, synced }) {
+  const ti = sel.t, t = song.tracks[ti], v = views[ti];
+  const reply = (text, ok = false) => soundChannel?.postMessage({ type: 'take-result', text, ok });
+  if (t.mode === 'pool') { reply(`${t.name} is a note-pool track; select a Steps track.`); return; }
+  const pat = C.takeToPattern(items, M.RATES[t.rate], { fromBar });
+  if (!pat.steps.length) { reply('No notes in those bars.'); return; }
+  t.patterns[v.pat] = keepLanes(t.patterns[v.pat], pat);
+  v.page = 0;
+  changed();
+  renderTrack(ti);
+  const bars = pat.length / (M.TICKS_PER_BAR / M.RATES[t.rate]);
+  reply(`Put ${bars} bar${bars > 1 ? 's' : ''} into ${t.name} pattern ${v.pat}.` + (!synced && bpm !== song.bpm ? ` You played it at ${bpm} BPM; the song is at ${song.bpm}.` : ''), true);
 }
+
+// A performance: count in, play, and stop after `bars` (or the song; null = until stopped).
+function recordPerformance({ bars, countIn }) {
+  if (engine.playing) stop();
+  if (bars === 'song') {
+    prefs.mode = 'song'; savePrefs(); engine.setMode('song'); renderTop(); paintSong();
+    bars = song.song.reduce((n, x) => n + x.bars, 0);
+  }
+  perf = { timer: null };
+  const started = play({ countIn });
+  if (!started) return;
+  const { t0, countIn: ci } = started;
+  soundChannel?.postMessage({ type: 'performance', state: 'start', wall: performance.timeOrigin + t0 - ci - 250 });
+  if (bars) perf.timer = setTimeout(() => endRun(perf, 1500), t0 - performance.now() + bars * 4 * 60000 / song.bpm + 30);
+}
+
+// A stem: one XL track of the song, solo, from bar 1 to the end, then `tail` seconds to ring out.
+// Solo and mute are put back afterwards (and never become an undo step).
+function printStem({ ti, tail = 2 }) {
+  if (engine.playing) stop();
+  if (!song.tracks[ti]) { soundChannel?.postMessage({ type: 'stem', state: 'end' }); return; }
+  const saved = song.tracks.map(t => [t.mute, t.solo]), savedMode = prefs.mode;
+  song.tracks.forEach((t, k) => { t.solo = k === ti; t.mute = false; });
+  prefs.mode = 'song';
+  engine.setMode('song');
+  stem = { restore() {
+    song.tracks.forEach((t, k) => { [t.mute, t.solo] = saved[k] || [t.mute, t.solo]; });
+    prefs.mode = savedMode;
+    engine.setMode(savedMode);
+    renderTop(); renderTracks(); paintSong();
+  } };
+  renderTracks();
+  // Half a second before bar 1, so the XL has loaded the track's sound.
+  const started = play({ countIn: false, delay: 500 });
+  if (!started) return;
+  const ms = song.song.reduce((n, x) => n + x.bars, 0) * 4 * 60000 / song.bpm;
+  soundChannel?.postMessage({ type: 'stem', state: 'start', wall: performance.timeOrigin + started.t0, ms, ti });
+  stem.timer = setTimeout(() => endRun(stem, tail * 1000), started.t0 - performance.now() + ms + 30);
+}
+
+function onRecorderMessage(m) {
+  switch (m.type) {
+    case 'get-seq-state': postSeqState(true); postTransport(); return true;
+    case 'audition-take': auditionTake(m.notes || []); return true;
+    case 'stop-audition': stopAudition(); return true;
+    case 'take-to-track': takeToTrack(m); return true;
+    case 'set-tempo': song.bpm = Math.max(20, Math.min(300, Math.round(m.bpm))); changed(); renderTop(); postSeqState(); return true;
+    case 'record-performance': recordPerformance(m); return true;
+    case 'stop-sequencer': stop(); return true;
+    case 'print-stem': printStem(m); return true;
+    case 'library-changed': refreshOpenList(); loadMine(); return true; // after an import
+  }
+  return false;
+}
+
+// ---------------------------------------------------------------------------------------------
+// Files to download
 
 function download(bytes, name) {
   const url = URL.createObjectURL(new Blob([bytes], { type: 'audio/midi' }));
@@ -1304,64 +1560,6 @@ function download(bytes, name) {
   setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 const midName = name => `${name.replace(/[^A-Za-z0-9 _-]/g, '').trim() || 'song'}.mid`;
-const stamp = ms => { const d = new Date(ms), p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}${p(d.getMinutes())}`; };
-
-$('#capture').addEventListener('click', e => {
-  const el = e.target.closest('[data-act]');
-  if (!el) return;
-  if (el.dataset.act === 'cap-clear') {
-    if (!confirm('Forget every captured take?')) return;
-    cap.events = []; store.set('capture', []); stopTake(); renderCapture();
-    return;
-  }
-  const id = +el.closest('[data-id]')?.dataset.id, take = findTake(id);
-  if (!take) return;
-  const bpm = takeBpm(take);
-  switch (el.dataset.act) {
-    case 'cap-play':
-      if (cap.playing?.id === id) stopTake(); else playTake(take);
-      break;
-    case 'cap-use': {
-      const ti = sel.t, t = song.tracks[ti], v = views[ti];
-      const pat = C.takeToPattern(C.takeTicks(take, bpm), M.RATES[t.rate], { fromBar: cap.fromBar.get(id) || 0 });
-      if (!pat.steps.length) { toast('No notes in those bars.'); break; }
-      t.patterns[v.pat] = pat;
-      v.page = 0;
-      changed();
-      renderTrack(ti);
-      const bars = pat.length / (M.TICKS_PER_BAR / M.RATES[t.rate]);
-      toast(`Put ${bars} bar${bars > 1 ? 's' : ''} into ${t.name} pattern ${v.pat}.`
-        + (!take.synced && bpm !== song.bpm ? ` You played it at ${bpm} BPM; the song is at ${song.bpm}.` : ''), 'ok');
-      break;
-    }
-    case 'cap-mid': {
-      const t = song.tracks[sel.t];
-      download(writeMidi({ name: 'Captured take', bpm, tracks: [{ name: 'Take', ch: t.ch, notes: C.takeMidiNotes(take, bpm) }] }),
-        `Take ${stamp(take.start)}.mid`);
-      break;
-    }
-    case 'cap-tempo': song.bpm = bpm; changed(); renderTop(); break;
-    case 'cap-del':
-      cap.events = cap.events.filter(x => x.t < take.start || x.t > take.end);
-      store.set('capture', cap.events);
-      if (cap.playing?.id === id) stopTake();
-      break;
-  }
-  renderCapture();
-});
-$('#capture').addEventListener('change', e => {
-  const id = +e.target.closest('[data-id]')?.dataset.id;
-  if (e.target.dataset.act === 'cap-bpm') {
-    const v = Math.round(+e.target.value);
-    if (v >= 40 && v <= 240) cap.bpm.set(id, v);
-  } else if (e.target.dataset.act === 'cap-from') cap.fromBar.set(id, +e.target.value);
-  e.target.blur();
-  renderCapture();
-});
-$('#cap-col').onclick = () => { prefs.capOpen = !prefs.capOpen; savePrefs(); renderCapture(); };
-// Keeps "2 min ago" current and the take being played growing.
-setInterval(() => { if (onScreen() && prefs.capOpen) renderCapture(); }, 15000);
-
 $('#export').onclick = () => {
   const r = songToMidi(song);
   if (!r.tracks.some(t => t.notes.length)) { toast('The song has no notes to export.'); return; }
@@ -1375,7 +1573,7 @@ $('#export').onclick = () => {
 function select(ti, i, open = true) {
   const prev = sel.t;
   sel = { t: ti, i, open };
-  if (prev !== ti) renderCapture();
+  if (prev !== ti) postSeqState();
   if (prev !== ti && song.tracks[prev]) renderTrack(prev);
   renderTrack(ti);
   // Live switching: the XL plays the selected track's sound.
@@ -1500,6 +1698,22 @@ $('#tracks').addEventListener('click', e => {
       if (v.lib.open) document.querySelector(`#trk-${ti} [data-act="lib-q"]`)?.focus();
       break;
     case 'lib-source': v.lib.source = el.dataset.val; renderTrack(ti); break;
+    case 'snd':
+      if (v.snd.open) { endTrying(ti); v.snd.open = false; renderTrack(ti); } else openSounds(ti);
+      break;
+    case 'snd-try': { const x = sounds?.find(y => y.key === el.dataset.key); if (x) trySound(ti, x); break; }
+    case 'snd-back': endTrying(ti); renderTrack(ti); break;
+    case 'snd-use': {
+      const x = sounds?.find(y => y.key === v.snd.trying);
+      if (!x) break;
+      t.sound = { name: x.name.trim(), data: [...x.data] };
+      v.snd.trying = null;
+      v.snd.open = false;
+      changed();
+      sendSound(ti); // also shows it in the Sound Editor, where edits are kept for this track
+      toast(`${t.name} now uses ${t.sound.name}.`, 'ok');
+      break;
+    }
     case 'lib-use': if (!e.target.closest('[data-act="lib-del"]')) useLibrary(ti, el.dataset.id); break;
     case 'lib-del': deleteMine(el.dataset.file); break;
     case 'star': starPattern(ti); break;
@@ -1507,10 +1721,33 @@ $('#tracks').addEventListener('click', e => {
     case 'idea-original': originalIdea(ti); break;
     case 'idea-keep': keepIdea(ti); break;
     case 'ai-cancel': v.ai.ctrl?.abort(); break;
+    case 'cc-add': {
+      const used = new Set((pat.cc || []).map(x => x.cc));
+      const cc = [74, 71, 1, 11, 7, 10].find(n => !used.has(n)) ?? CC_LIST.find(n => !used.has(n));
+      edit(ti, () => { pat.cc = [...(pat.cc || []), { cc, glide: false, steps: [] }]; });
+      break;
+    }
+    case 'cc-del': edit(ti, () => { pat.cc.splice(+el.dataset.l, 1); if (!pat.cc.length) delete pat.cc; }); learning = null; break;
+    case 'cc-learn': {
+      const l = +el.dataset.l;
+      learning = learning?.ti === ti && learning.l === l ? null : { ti, l };
+      if (learning && !prefs.keysIn) toast('Choose your keyboard under MIDI in first.');
+      renderTrack(ti);
+      break;
+    }
   }
 });
 
 $('#tracks').addEventListener('keydown', e => {
+  if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && e.target.closest('.snd-panel')) {
+    e.preventDefault();
+    e.stopPropagation();
+    const ti = +trackEl(e).dataset.t, items = sndItems(ti).slice(0, 400);
+    if (!items.length) return;
+    const k = items.findIndex(x => x.key === views[ti].snd.trying);
+    trySound(ti, items[Math.max(0, Math.min(items.length - 1, k < 0 ? 0 : k + (e.key === 'ArrowDown' ? 1 : -1)))]);
+    return;
+  }
   if (e.target.dataset.act === 'ai-msg' && e.key === 'Enter') {
     e.preventDefault();
     const ti = +trackEl(e).dataset.t;
@@ -1537,6 +1774,12 @@ $('#tracks').addEventListener('input', e => {
     t.vol = +el.value;
     if (t.out !== M.COMPUTER) sendVolume(t);
     changed({ coalesce: true });
+    return;
+  }
+  if (tEl && el.dataset.act === 'snd-q') {
+    const ti = +tEl.dataset.t;
+    views[ti].snd.q = el.value;
+    tEl.querySelector('.snd-panel .lib-list').innerHTML = sndRows(ti);
     return;
   }
   if (tEl && el.dataset.act === 'lib-q') {
@@ -1574,13 +1817,35 @@ $('#tracks').addEventListener('change', e => {
       if (port && t.program !== null) send(port, [0xc0 | (t.ch - 1), t.program]); // hear it right away
       break;
     }
-    case 'voice': edit(ti, () => { t.voice = el.value; }); preview(ti, t.voice === 'Drums' ? 36 : 48); break;
+    case 'voice': {
+      const v = el.value;
+      if (v.startsWith('lab:')) {
+        const name = v.slice(4), found = instruments.find(x => x.name === name);
+        if (found) edit(ti, () => { t.inst = M.cleanInst({ name, patch: found.patch }); });
+      } else edit(ti, () => { t.voice = v; t.inst = null; });
+      synth.wake();
+      preview(ti, !t.inst && t.voice === 'Drums' ? 36 : 48);
+      break;
+    }
     case 'rate': edit(ti, () => { t.rate = el.value; }); break;
     case 'e-len': {
       const s = M.stepAt(pat, sel.i);
       if (s) edit(ti, () => { s.len = Math.max(1, Math.min(M.maxLen(pat, sel.i), Math.round(+el.value) || 1)); });
       break;
     }
+    case 'e-prob': case 'e-rat': {
+      const s = M.stepAt(pat, sel.i), key = el.dataset.act === 'e-prob' ? 'prob' : 'rat', val = +el.value;
+      if (s) edit(ti, () => { if (val === (key === 'prob' ? 100 : 1)) delete s[key]; else s[key] = val; });
+      break;
+    }
+    case 'cc-num': {
+      const lane = pat.cc?.[+el.dataset.l], n = +el.value;
+      if (!lane) break;
+      if (pat.cc.some(x => x !== lane && x.cc === n)) { toast(`This pattern already has a lane for ${ccName(n)}.`); renderTrack(ti); break; }
+      edit(ti, () => { lane.cc = n; });
+      break;
+    }
+    case 'cc-glide': { const lane = pat.cc?.[+el.dataset.l]; if (lane) edit(ti, () => { lane.glide = el.checked; }); break; }
     case 'p-order': edit(ti, () => { t.pool.order = el.value; }); break;
     case 'ai-role': v.ai.role = el.value; renderTrack(ti); break;
     case 'ai-register': v.ai.register = el.value; break;
@@ -1588,6 +1853,8 @@ $('#tracks').addEventListener('change', e => {
     case 'ai-n': v.ai.n = +el.value; break;
     case 'idea-put': if (el.value) putIdea(ti, el.value); break;
     case 'lib-role': v.lib.role = el.value; renderTrack(ti); break;
+    case 'snd-type': v.snd.type = el.value; renderTrack(ti); break;
+    case 'snd-bank': v.snd.bank = el.value; renderTrack(ti); break;
     case 'lane-add': if (el.value) { v.lanes = [...(v.lanes || []), +el.value]; preview(ti, +el.value); renderTrack(ti); } break;
     case 'p-latch': edit(ti, () => { t.pool.latch = el.checked; }); break;
   }
@@ -1619,6 +1886,30 @@ $('#tracks').addEventListener('pointerdown', e => {
     renderTrack(ti);
   };
   addEventListener('pointerover', over);
+  addEventListener('pointerup', up);
+});
+
+// Controller lanes: click or drag to draw values; ⌥ (Alt) clears.
+$('#tracks').addEventListener('pointerdown', e => {
+  const cell = e.target.closest('.cc-cell');
+  if (!cell) return;
+  e.preventDefault();
+  const ti = +trackEl(e).dataset.t, l = +cell.dataset.l, clear = e.altKey;
+  setCC(ti, l, cell, e.clientY, clear);
+  refreshGrid(ti);
+  const move = ev => {
+    const c = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('.cc-cell');
+    if (!c || +c.dataset.l !== l || +c.closest('[data-t]').dataset.t !== ti) return;
+    setCC(ti, l, c, ev.clientY, clear);
+    refreshGrid(ti);
+  };
+  const up = () => {
+    removeEventListener('pointermove', move);
+    removeEventListener('pointerup', up);
+    changed();
+    renderTrack(ti);
+  };
+  addEventListener('pointermove', move);
   addEventListener('pointerup', up);
 });
 
@@ -1676,7 +1967,7 @@ $('#song').addEventListener('change', e => {
 });
 
 // Top bar
-$('#play').onclick = play;
+$('#play').onclick = () => play();
 $('#stop').onclick = stop;
 $('#rec').onclick = () => setRec(!rec.on);
 $('#bpm').addEventListener('input', e => {
@@ -1726,8 +2017,8 @@ $('#add-track').onclick = () => {
   changed();
   renderSong(); renderTracks();
 };
-$('#keys-in').onchange = e => { prefs.keysIn = e.target.value || null; savePrefs(); held.length = 0; renderCapture(); };
-// Clicking the amber light (or its text) switches Keys in to the port the notes came from.
+$('#keys-in').onchange = e => { prefs.keysIn = e.target.value || null; savePrefs(); held.length = 0; };
+// Clicking the amber light (or its text) switches MIDI in to the port the notes came from.
 for (const id of ['#keys-led', '#keys-last']) $(id).addEventListener('click', e => {
   if (!lastOther) return;
   e.preventDefault();
@@ -1737,7 +2028,7 @@ for (const id of ['#keys-led', '#keys-last']) $(id).addEventListener('click', e 
   $('#keys-last').textContent = '';
   $('#keys-last').classList.remove('fix');
   renderPorts();
-  toast(`Keys in: ${$('#keys-in').selectedOptions[0]?.textContent}`, 'ok');
+  toast(`MIDI in: ${$('#keys-in').selectedOptions[0]?.textContent}`, 'ok');
 });
 $('#thru').checked = prefs.thru;
 $('#thru').onchange = e => { prefs.thru = e.target.checked; savePrefs(); };
@@ -1746,28 +2037,41 @@ $('#clock-list').addEventListener('change', e => {
   savePrefs();
   renderPorts();
 });
-document.addEventListener('click', e => { if (!e.target.closest('#clock-out')) $('#clock-out').open = false; });
+document.addEventListener('click', e => {
+  if (!e.target.closest('#clock-out')) $('#clock-out').open = false;
+  if (!e.target.closest('#click-menu')) $('#click-menu').open = false;
+});
+
+// Metronome menu
+const renderClick = () => {
+  document.querySelectorAll('input[name=click]').forEach(r => { r.checked = r.value === prefs.click; });
+  $('#count-in').checked = prefs.countIn;
+  $('#click-vol').value = prefs.clickVol;
+  $('#click-sum').textContent = { off: 'off', rec: 'rec', on: 'on' }[prefs.click];
+};
+$('#click-menu').addEventListener('change', e => {
+  if (e.target.name === 'click') prefs.click = e.target.value;
+  else if (e.target.id === 'count-in') prefs.countIn = e.target.checked;
+  savePrefs();
+  renderClick();
+});
+$('#click-vol').addEventListener('input', e => { prefs.clickVol = +e.target.value; savePrefs(); });
+$('#click-vol').addEventListener('change', () => synth.click(performance.now() + 30, true, prefs.clickVol / 100));
+renderClick();
 
 // ---------------------------------------------------------------------------------------------
-// Files: data/sequences/<name>.json via serve.py
-
-async function api(path, body) {
-  const r = await fetch(path, body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : undefined);
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.error || r.statusText);
-  return j;
-}
+// Files: data/sequences/<name>.json at home, or this browser in the travel version (core/storage.js)
 
 let saved = [];
 async function refreshOpenList() {
-  try { saved = await api('/api/sequences'); } catch { saved = []; }
+  try { saved = await storage.list('sequences'); } catch { saved = []; }
   $('#open').innerHTML = `<option value="">Open…</option>`
     + saved.map(f => `<option value="${esc(f.file)}">${esc(f.name)}</option>`).join('')
     + `<option value="__demo">Demo song</option>`;
 }
 
 // Same rule as serve.py's safe_stem, so we can warn before replacing another song's file.
-const fileFor = name => `${(name.replace(/[^A-Za-z0-9 _-]/g, '').trim() || 'SOUND').slice(0, 32)}.json`;
+const fileFor = name => `${stemOf(name)}.json`;
 
 async function save() {
   let name = song.name.trim();
@@ -1781,15 +2085,15 @@ async function save() {
   if (target !== fileName && saved.some(f => f.file === target)
       && !confirm(`A saved song already uses the file ${target}. Replace it?`)) return;
   try {
-    const { file } = await api('/api/sequences', { song });
+    const file = await storage.save('sequences', song);
     fileName = file;
     dirty = false;
     saveWorking();
     renderFileBar();
     refreshOpenList();
-    toast(`Saved to data/sequences/${file}`, 'ok');
+    toast(`Saved to ${placeOf('sequences', file)}`, 'ok');
   } catch (err) {
-    toast(`Couldn't save: ${err.message}. Is serve.py running?`, 'err');
+    toast(`Couldn't save: ${err.message}.${STATIC ? '' : ' Is serve.py running?'}`, 'err');
   }
 }
 
@@ -1803,17 +2107,15 @@ $('#open').onchange = async e => {
   if (!file || !discardOk()) return;
   if (file === '__demo') { load(demoSong(), null); return; }
   try {
-    const r = await fetch(`sequences/${encodeURIComponent(file)}`);
-    if (!r.ok) throw new Error(r.statusText);
-    load(await r.json(), file);
+    load(await storage.get('sequences', file), file);
   } catch (err) {
     toast(`Couldn't open ${file}: ${err.message}`, 'err');
   }
 };
 $('#delete').onclick = async () => {
-  if (!fileName || !confirm(`Move "${song.name}" to data/sequences/deleted/? It stays open here, unsaved.`)) return;
+  if (!fileName || !confirm(`${STATIC ? 'Delete' : 'Move'} "${song.name}"${STATIC ? '' : ' to data/sequences/deleted/'}? It stays open here, unsaved.`)) return;
   try {
-    await api('/api/sequences/delete', { file: fileName });
+    await storage.remove('sequences', fileName);
     fileName = null;
     dirty = true;
     saveWorking();
@@ -1892,6 +2194,7 @@ document.querySelectorAll('.app-nav a[data-view]').forEach(a => a.addEventListen
   }
   if (!ok) load(demoSong(), null);
   refreshOpenList();
+  refreshInstruments();
   loadMine();
   initMidi();
   soundChannel?.postMessage({ type: 'get-program' });

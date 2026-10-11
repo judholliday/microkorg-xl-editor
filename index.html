@@ -10,26 +10,53 @@
     html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
     iframe { display: block; width: 100%; height: 100%; border: 0; }
     iframe[hidden] { display: none; }
+    /* The Recorder: a panel over the right side of whichever page is showing, or the whole window. */
+    #recorder { position: fixed; top: 0; right: 0; width: min(480px, 100%); height: 100%; z-index: 10;
+      box-shadow: -8px 0 32px rgba(0, 0, 0, .35); border-left: 1px solid rgba(128, 128, 128, .35); }
+    #recorder.wide { width: 100%; }
   </style>
 </head>
 <body>
   <!--
-    Hosts the Sound Editor and the Sequencer together and shows one at a time. Both stay loaded,
+    Hosts the Sound Editor, the Sequencer and the Lab together and shows one at a time. Both stay loaded,
     so the sequencer keeps playing (and the editor keeps following the synth) while you switch.
     The pages ask to switch with postMessage({ type: 'switch-view', view }).
   -->
   <iframe id="editor" title="Sound Editor" allow="midi"></iframe>
   <iframe id="sequencer" title="Sequencer" allow="midi" hidden></iframe>
+  <iframe id="lab" title="Lab" allow="midi" hidden></iframe>
+  <iframe id="recorder" title="Recorder" allow="midi; microphone" hidden></iframe>
   <script>
-    const frames = { editor: document.getElementById('editor'), sequencer: document.getElementById('sequencer') };
+    // The travel version (anywhere but this Mac's own server; see js/core/mode.js) has no XL
+    // editor: it needs the synth and the server. It works offline once loaded (sw.js).
+    const STATIC = new URLSearchParams(location.search).has('static') || !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+    const frames = { editor: document.getElementById('editor'), sequencer: document.getElementById('sequencer'), lab: document.getElementById('lab') };
+    if (STATIC) {
+      frames.editor.remove();
+      delete frames.editor;
+      if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
     // A fresh address each time, so a browser never restores an out-of-date copy of a page.
     const fresh = `${location.search ? `${location.search}&` : '?'}v=${Date.now()}`;
-    frames.editor.src = `editor.html${fresh}`;
+    if (frames.editor) frames.editor.src = `editor.html${fresh}`;
     frames.sequencer.src = `sequencer.html${fresh}`;
+    frames.lab.src = `lab.html${fresh}`;
+    const recorder = document.getElementById('recorder');
+    recorder.src = `recorder.html${fresh}`;
+    // Open/closed and wide are remembered; each page's ● Recorder button shows the state.
+    const recState = { open: false, wide: false };
+    try { Object.assign(recState, JSON.parse(localStorage.getItem('mkxl.recorder.panel')) || {}); } catch { /* defaults */ }
+    function applyRecorder() {
+      recorder.hidden = !recState.open;
+      recorder.classList.toggle('wide', recState.wide);
+      try { localStorage.setItem('mkxl.recorder.panel', JSON.stringify(recState)); } catch { /* storage unavailable */ }
+      for (const f of Object.values(frames)) f.contentWindow?.postMessage({ type: 'recorder-state', ...recState }, location.origin);
+      (recState.open ? recorder : frames[current]).contentWindow?.focus();
+    }
     let current = 'editor';
 
     function show(view) {
-      if (!frames[view]) view = 'editor';
+      if (!frames[view]) view = frames.editor ? 'editor' : 'sequencer';
       current = view;
       for (const [name, frame] of Object.entries(frames)) frame.hidden = name !== view;
       history.replaceState(null, '', `${location.search}#${view}`);
@@ -44,11 +71,17 @@
     setInterval(syncTitle, 1000);
 
     addEventListener('message', e => {
-      if (e.origin === location.origin && e.data?.type === 'switch-view') show(e.data.view);
+      if (e.origin !== location.origin) return;
+      if (e.data?.type === 'switch-view') show(e.data.view);
+      else if (e.data?.type === 'toggle-recorder') { recState.open = typeof e.data.open === 'boolean' ? e.data.open : !recState.open; applyRecorder(); }
+      else if (e.data?.type === 'recorder-wide') { recState.wide = !recState.wide; applyRecorder(); }
+      else if (e.data?.type === 'recorder-hello') applyRecorder(); // a page loaded: tell it the state
     });
     addEventListener('hashchange', () => show(location.hash.slice(1)));
     for (const frame of Object.values(frames)) frame.addEventListener('load', syncTitle);
     show(location.hash.slice(1));
+    recorder.hidden = !recState.open;
+    recorder.classList.toggle('wide', recState.wide);
   </script>
 </body>
 </html>

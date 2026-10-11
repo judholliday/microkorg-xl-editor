@@ -1,8 +1,8 @@
 // Offline checks for the SysEx codec and parameter map: node tools/selftest.mjs
 import assert from 'node:assert/strict';
-import { encode8to7, decode7to8, msg, parse, splitSysex } from '../js/sysex.js';
+import { encode8to7, decode7to8, msg, parse, splitSysex } from '../js/xl/sysex.js';
 import { PROGRAM_SIZE, PROGRAM_PARAMS, timbreParams, vocoderParams, fxParams, arpParams, TABLES,
-  getValue, setValue, format, range, initProgram, programName, slotName, voicing } from '../js/params.js';
+  getValue, setValue, format, range, initProgram, programName, slotName, voicing } from '../js/xl/params.js';
 
 // 7/8-bit packing round-trips for every length and every byte value.
 for (let len = 0; len < 30; len++) {
@@ -71,8 +71,8 @@ console.log(`ok — ${all.length} parameters checked`);
 
 // AI value translation: every factory preset survives bytes -> readable -> bytes for every mapped param.
 import { readdirSync, readFileSync } from 'node:fs';
-import { parseKorgEditorFile } from '../js/korgfile.js';
-import { aiParams, programToAi, applyAiChanges, parameterReference, fromAi, toAi } from '../js/aiparams.js';
+import { parseKorgEditorFile } from '../js/xl/korgfile.js';
+import { aiParams, programToAi, applyAiChanges, parameterReference, fromAi, toAi } from '../js/xl/aiparams.js';
 let presetCount = 0;
 for (const f of readdirSync(new URL('../presets/', import.meta.url))) {
   if (!f.endsWith('.mkxl_all')) continue;
@@ -104,8 +104,8 @@ assert.equal(realSearch.sysexFiltered, false); assert.equal(realSearch.version, 
 console.log('ok — real device replies parse correctly');
 
 // Sound types: every bundled preset gets a known type, and every reviewed correction matches a real preset.
-import { soundType, TYPES } from '../js/soundtype.js';
-import { OVERRIDES } from '../js/sound-types.js';
+import { soundType, TYPES } from '../js/xl/soundtype.js';
+import { OVERRIDES } from '../js/xl/sound-types.js';
 const seen = new Set(), banks = new Set();
 for (const f of readdirSync(new URL('../presets/', import.meta.url))) {
   if (!/\.(mkxl_all|syx)$/.test(f)) continue;
@@ -141,3 +141,18 @@ console.log(`ok — ${seen.size} preset names typed, ${Object.keys(OVERRIDES).le
 }
 
 await import('./seqtest.mjs');
+await import('./labtest.mjs');
+await import('./rectest.mjs');
+
+// The travel version's offline list (sw.js) has every page, style and script it uses.
+{
+  const { readdirSync: ls, readFileSync: read, existsSync } = await import('node:fs');
+  const root = new URL('../', import.meta.url);
+  const listed = [...read(new URL('sw.js', root), 'utf8').match(/const ASSETS = \[([\s\S]*?)\];/)[1].matchAll(/'([^']+)'/g)].map(m => m[1]);
+  const wanted = [...ls(root).filter(f => /\.(html|css)$/.test(f) && f !== 'editor.html'),
+    ...ls(new URL('js/', root)).filter(d => !d.includes('.')).flatMap(d => ls(new URL(`js/${d}/`, root)).filter(f => f.endsWith('.js')).map(f => `js/${d}/${f}`))
+  ].filter(f => f !== 'js/xl/app.js'); // the XL editor isn't in the travel version
+  const missing = wanted.filter(f => !listed.includes(f)), gone = listed.filter(f => f !== './' && !existsSync(new URL(f, root)));
+  if (missing.length || gone.length) throw new Error(`sw.js ASSETS: missing ${missing.join(', ') || '-'}; not found ${gone.join(', ') || '-'}`);
+  console.log(`ok — travel version's offline list (${listed.length} files)`);
+}

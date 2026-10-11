@@ -2,7 +2,7 @@
 // (also run by tools/selftest.mjs)
 import assert from 'node:assert/strict';
 import { normalizeSong, newSong, newTrack, putStep, removeStep, stepAt, coverMap, maxLen, noteSteps,
-  poolOrder, inScale, snapToScale, addTrack, removeTrack, copyPattern, cleanPattern, guessRole, MAX_STEPS } from '../js/seq/model.js';
+  poolOrder, inScale, snapToScale, addTrack, removeTrack, copyPattern, cleanPattern, guessRole, MAX_STEPS, laneValue } from '../js/seq/model.js';
 import { Engine } from '../js/seq/engine.js';
 import { randomIdea, euclid, seeded } from '../js/seq/generate.js';
 import { STOCK } from '../js/seq/stock.js';
@@ -256,6 +256,70 @@ function run(song, { ms, mode = 'loop', pool = () => [] } = {}) {
   near(e.tickAt(1040 + 500), 96, 'tick at a time');
 }
 
+
+// ---- chance, ratchets, controller lanes ----
+{
+  const p = cleanPattern({ length: 8, steps: [{ i: 0, notes: [60], prob: 50, rat: 3 }, { i: 2, notes: [62], prob: 100, rat: 1 }, { i: 4, notes: [64], prob: 0, rat: 9 }],
+    cc: [{ cc: 74, glide: 1, steps: [{ i: 0, v: 0 }, { i: 4, v: 200 }, { i: 9, v: 5 }] }, { cc: 74 }, { cc: 300 }] });
+  assert.deepEqual(p.steps[0], { i: 0, notes: [60], vel: 100, gate: 60, len: 1, prob: 50, rat: 3 });
+  assert.deepEqual(p.steps[1], { i: 2, notes: [62], vel: 100, gate: 60, len: 1 }, 'defaults are left out');
+  assert.deepEqual([p.steps[2].prob, p.steps[2].rat], [1, 4]);
+  assert.deepEqual(p.cc, [{ cc: 74, glide: true, steps: [{ i: 0, v: 0 }, { i: 4, v: 127 }, { i: 9, v: 5 }] }]);
+  assert.equal(cleanPattern({ steps: [] }).cc, undefined);
+  const c = copyPattern(p);
+  c.cc[0].steps[0].v = 99;
+  assert.equal(p.cc[0].steps[0].v, 0, 'copy is deep');
+
+  const lane = { cc: 74, glide: false, steps: [{ i: 0, v: 0 }, { i: 4, v: 100 }] };
+  assert.equal(laneValue(lane, 4, 8), 100);
+  assert.equal(laneValue(lane, 2, 8), null, 'without glide, only set steps send');
+  lane.glide = true;
+  assert.equal(laneValue(lane, 2, 8), 50, 'halfway up');
+  assert.equal(laneValue(lane, 6, 8), 50, 'and back down, wrapping to step 0');
+  assert.equal(laneValue(lane, 7.5, 8), 13);
+  assert.equal(laneValue({ cc: 1, glide: true, steps: [{ i: 3, v: 40 }] }, 0, 8), 40, 'one point holds');
+  assert.equal(laneValue({ cc: 1, glide: true, steps: [{ i: 12, v: 40 }] }, 0, 8), null, 'points past the end are ignored');
+}
+{
+  // Engine: a 50% step plays about half the time; ratchets split the note; lanes send CCs.
+  const song = newSong();
+  const t = song.tracks[0];
+  t.patterns.A.length = 4;
+  putStep(t.patterns.A, 0, { notes: [60], prob: 50 });
+  putStep(t.patterns.A, 2, { notes: [62], len: 2, gate: 50, rat: 4 });
+  t.patterns.A.cc = [{ cc: 74, glide: true, steps: [{ i: 0, v: 0 }, { i: 2, v: 80 }] }];
+  let now = 0, rng = 0;
+  const notes = [], ccs = [];
+  const e = new Engine({ song: () => song, now: () => now, rng: () => (rng = (rng + 0.37) % 1),
+    sink: { note: (ti, n, v, at, dur) => notes.push({ n, at: at - 40, dur }), cc: (ti, c, v, at) => ccs.push([c, v, at - 40]) } });
+  e.play();
+  for (; now < 8000; now += 25) e.pump(); // 16 loops of the 4-step pattern (500 ms each at 120 BPM)
+  const c4 = notes.filter(x => x.n === 60).length;
+  assert.ok(c4 >= 5 && c4 <= 11, `50% step played ${c4} of 16 times`);
+  const rolls = notes.filter(x => x.n === 62 && x.at < 500).map(x => Math.round(x.at));
+  assert.deepEqual(rolls, [250, 313, 375, 438], 'four repeats across two steps');
+  near(notes.find(x => x.n === 62).dur, 62.5 * 0.5 - 2, 'gate applies to each repeat');
+  const first = ccs.filter(x => x[2] < 500);
+  assert.deepEqual(first.map(x => x[1]), [0, 10, 20, 30, 40, 50, 60, 70, 80, 70, 60, 50, 40, 30, 20, 10], 'glides up and back');
+  assert.ok(first.every(x => x[0] === 74));
+}
+
+{
+  // halt(): no new notes, but stop() afterwards still tells the sink.
+  const song = newSong();
+  for (let i = 0; i < 16; i++) putStep(song.tracks[0].patterns.A, i, { notes: [60] });
+  let t = 0, notes = 0, stops = 0;
+  const e = new Engine({ song: () => song, now: () => t, sink: { note: () => notes++, stop: () => stops++ } });
+  e.play();
+  for (; t < 500; t += 25) e.pump();
+  e.halt();
+  const n = notes;
+  for (; t < 1500; t += 25) e.pump();
+  assert.equal(notes, n, 'no notes after halt');
+  e.stop();
+  assert.equal(stops, 1, 'stop after halt still stops');
+}
+
 // ---- MIDI files ----
 {
   const bytes = writeMidi({ name: 'Test', bpm: 125, tracks: [
@@ -294,6 +358,10 @@ function run(song, { ms, mode = 'loop', pool = () => [] } = {}) {
   assert.deepEqual(r.tracks[1].notes.map(n => [n.tick, n.note]), [[0, 60], [192, 64]], 'pool walks up, silent in section 2');
   const back = readMidi(writeMidi(r));
   assert.equal(back.tracks.length, 3);
+  // Controller lanes go into the file too.
+  t.patterns.A.cc = [{ cc: 74, glide: false, steps: [{ i: 0, v: 10 }] }];
+  const withCC = readMidi(writeMidi(renderSong(song)));
+  assert.deepEqual(withCC.tracks[1].ccs.map(c => [c.tick, c.cc, c.v]), [[0, 74, 10], [96, 74, 10], [192, 74, 10], [288, 74, 10]]);
   assert.equal(back.tracks[1].notes.length, bass.length);
 }
 
@@ -335,6 +403,11 @@ function run(song, { ms, mode = 'loop', pool = () => [] } = {}) {
   assert.ok(along.synced);
   assert.deepEqual(takeToPattern(takeTicks(along), 24).steps.map(s => [s.i, s.notes[0], s.len]), [[4, 60, 1], [8, 62, 1]]);
   assert.deepEqual(takeMidiNotes(along).map(n => n.tick), [95, 192]);
+  // A performance range keeps a long rest inside one take.
+  const perf = splitTakes(notesOf([ev(0, 'on', 60), ev(100, 'off', 60), ev(9000, 'on', 62), ev(9100, 'off', 62), ev(20000, 'on', 64), ev(20100, 'off', 64)]),
+    4000, [{ start: -10, end: 9500, kind: 'performance' }]);
+  assert.deepEqual(perf.map(t => [t.notes.length, t.kind]), [[2, 'performance'], [1, undefined]]);
+  assert.equal(perf[0].id, -10);
   // Played across two runs: not synced.
   assert.ok(!splitTakes(notesOf([sync(0, 'on', 60, 10), { ...sync(50, 'on', 62, 10), run: 2 }]))[0].synced);
 }

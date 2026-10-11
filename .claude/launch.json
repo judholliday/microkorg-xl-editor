@@ -1,6 +1,27 @@
 {
   "version": "0.0.1",
   "configurations": [
-    { "name": "editor", "runtimeExecutable": "uv", "runtimeArgs": ["run", "serve.py"], "port": 8765 }
+    {
+      "name": "editor",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": [
+        "run",
+        "serve.py"
+      ],
+      "port": 8765
+    },
+    {
+      "name": "editor-test",
+      "runtimeExecutable": "uv",
+      "runtimeArgs": [
+        "run",
+        "serve.py"
+      ],
+      "port": 8766,
+      "env": {
+        "MKXL_PORT": "8766",
+        "MKXL_DATA": "test-data"
+      }
+    }
   ]
 }

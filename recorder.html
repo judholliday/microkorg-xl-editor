@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recorder · microKORG XL</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="sequencer.css">
+  <link rel="stylesheet" href="recorder.css">
+  <!-- A panel inside index.html, opened from any page with ● Recorder (or ⌥R). -->
+  <script>if (top === self) location.replace('index.html' + location.search);</script>
+</head>
+<body>
+  <header class="rec-head">
+    <b class="rec-title">● Recorder</b>
+    <label class="field" title="The keyboard or controller whose playing is kept (e.g. your MPK mini)">MIDI in <select id="midi-in"></select>
+      <span id="led" class="keys-led">●</span></label>
+    <span class="spacer"></span>
+    <button id="wide" class="ghost small" title="Fill the window, or go back to a side panel">⤢</button>
+    <button id="close" class="ghost small" title="Close (⌥R)">✕</button>
+  </header>
+
+  <section class="rec-section">
+    <h2>Record with the sequencer</h2>
+    <p class="hint">Counts in, starts the sequencer and records what you play over it as one take, rests and all.</p>
+    <div class="perf-row">
+      <label class="field">Length <select id="perf-len"></select></label>
+      <label class="field"><input type="checkbox" id="perf-countin"> Count in one bar</label>
+      <label class="field" title="Also record the audio input, starting exactly at bar 1"><input type="checkbox" id="perf-audio"> Record audio too</label>
+      <button id="perf-go" class="rec-go">● Record</button>
+    </div>
+    <div id="perf-status" class="hint"></div>
+  </section>
+
+  <section class="rec-section" id="audio-sec">
+    <h2>Audio</h2>
+    <div class="audio-row">
+      <label class="field">Audio in <select id="audio-in"><option value="">— off —</option></select></label>
+      <label class="field" title="Which input of the interface to record (the XL is on input 2)">Input <select id="audio-ch">
+        <option value="1">2 (right)</option><option value="0">1 (left)</option><option value="both">1 + 2 (stereo)</option></select></label>
+    </div>
+    <div class="audio-row">
+      <div class="meter" title="Input level: keep the loudest parts below the red"><i id="meter-bar"></i></div><span id="meter-db" class="hint">—</span>
+    </div>
+    <div class="audio-row">
+      <button id="audio-rec" class="rec-go" title="Record the audio input until you press it again">● Record audio</button>
+      <span id="audio-time" class="hint"></span>
+      <span class="spacer"></span>
+      <button id="measure" class="ghost small" title="Plays one short note on the XL and times how long its sound takes to arrive, so recordings line up with the sequencer">Measure delay</button>
+      <span id="latency" class="hint"></span>
+    </div>
+    <div class="audio-row">
+      <button id="stems" class="ghost" title="Records each XL track of the song on its own, one after another">Print stems</button>
+      <span id="stems-status" class="hint">Plays the song once per XL track, solo, and saves each as its own file, all starting at bar 1.</span>
+    </div>
+    <h3 class="sub">Recordings <span class="hint plain">· saved in data/audio/ (not backed up to GitHub)</span></h3>
+    <div id="recordings" class="recordings"></div>
+  </section>
+
+  <section class="rec-section">
+    <h2>Takes <span id="takes-sum" class="hint plain"></span></h2>
+    <div id="takes" class="takes"></div>
+  </section>
+
+  <div id="toasts" class="toasts"></div>
+  <script type="module" src="js/rec/ui.js"></script>
+</body>
+</html>

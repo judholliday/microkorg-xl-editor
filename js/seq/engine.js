@@ -6,10 +6,10 @@
 //   song()      the current song (read live, so edits take effect while playing)
 //   now()       the current time in ms (performance.now() in the browser)
 //   pool(ti)    the notes a note-pool track should walk through right now
-//   sink        { note(ti, note, vel, atMs, durMs), clock(atMs), start(atMs), stop(atMs),
+//   sink        { note(ti, note, vel, atMs, durMs), cc(ti, controller, value, atMs), clock(atMs), start(atMs), stop(atMs),
 //                 step(ti, pos, pattern, atMs, silent, notes), bar(section, barInSection, atMs) }
 // and calls pump() every ~25 ms while playing.
-import { TICKS_PER_BAR, CLOCK_TICKS, RATES, SWUNG_RATES, stepAt, noteSteps, poolOrder, audible } from './model.js';
+import { TICKS_PER_BAR, CLOCK_TICKS, RATES, SWUNG_RATES, stepAt, noteSteps, poolOrder, audible, laneValue } from './model.js';
 
 export const LOOKAHEAD_MS = 120;
 const START_DELAY_MS = 40; // so the first notes aren't already late when they're sent
@@ -25,9 +25,10 @@ export class Engine {
   get tickMs() { return 60000 / (this.anchor.bpm * 96); }
   tickTime(tick) { return this.anchor.ms + (tick - this.anchor.tick) * this.tickMs; }
 
-  play() {
+  // `delay` (ms) holds off the first beat, e.g. for a count-in. Returns when the first beat sounds.
+  play({ delay = 0 } = {}) {
     const song = this.song();
-    const t0 = this.now() + START_DELAY_MS;
+    const t0 = this.now() + START_DELAY_MS + delay;
     this.anchor = { tick: 0, ms: t0, bpm: song.bpm };
     this.section = 0;
     this.secBar = -1;
@@ -39,14 +40,20 @@ export class Engine {
     this.playing = true;
     this.sink.start?.(t0);
     this.pump();
+    return t0;
   }
 
   stop() {
-    if (!this.playing) return;
+    if (!this.playing && !this.halted) return;
     this.playing = false;
+    this.halted = false;
     this.queued.clear();
     this.sink.stop?.(this.now());
   }
+
+  // Stops scheduling new notes but leaves sounding ones to finish (e.g. at the end of a
+  // recording, so the last notes' release is kept). Call stop() afterwards.
+  halt() { if (this.playing) { this.playing = false; this.halted = true; this.queued.clear(); } }
 
   setMode(mode) {
     if (mode === this.mode) return;
@@ -139,7 +146,9 @@ export class Engine {
     // Swing delays every second step: 50% is straight, 66% a triplet feel, 75% dotted.
     if (SWUNG_RATES.has(track.rate) && Math.floor(ts.next / rate) % 2 === 1) at += (song.swing / 100 - 0.5) * 2 * stepMs;
 
-    const s = ts.silent ? null : stepAt(pat, ts.pos);
+    const step = ts.silent ? null : stepAt(pat, ts.pos);
+    // A step with a chance below 100% plays only that often.
+    const s = step && (!step.prob || this.rng() * 100 < step.prob) ? step : null;
     let notes = [];
     if (s) {
       notes = s.notes;
@@ -151,12 +160,36 @@ export class Engine {
       }
       if (audible(song, ti)) {
         // End a hair early so a note at 100% gate is off before the next one on the same key.
-        const dur = Math.max(5, noteSteps(s, pat.length) * stepMs - 2);
-        for (const n of notes) this.sink.note?.(ti, n, s.vel, at, dur);
+        const rat = s.rat || 1;
+        if (rat === 1) {
+          const dur = Math.max(5, noteSteps(s, pat.length) * stepMs - 2);
+          for (const n of notes) this.sink.note?.(ti, n, s.vel, at, dur);
+        } else {
+          // A ratchet repeats the note evenly across its length; gate applies to each repeat.
+          const each = Math.max(1, Math.min(s.len, pat.length - s.i)) * stepMs / rat;
+          const dur = Math.max(5, each * s.gate / 100 - 2);
+          for (let r = 0; r < rat; r++) for (const n of notes) this.sink.note?.(ti, n, s.vel, at + r * each, dur);
+        }
       }
     }
+    if (pat.cc && !ts.silent && audible(song, ti)) this.lanes(ti, ts, pat, at, stepMs);
     this.sink.step?.(ti, ts.pos, ts.pattern, at, ts.silent, notes);
     ts.pos = (ts.pos + 1) % pat.length;
     ts.next += rate;
+  }
+
+  // Controller lanes: a value at each step that sets one; gliding lanes also send four in-between
+  // values per step (only when the value changes).
+  lanes(ti, ts, pat, at, stepMs) {
+    ts.sent ||= {};
+    for (const lane of pat.cc) {
+      const subs = lane.glide ? 4 : 1;
+      for (let k = 0; k < subs; k++) {
+        const v = laneValue(lane, ts.pos + k / subs, pat.length);
+        if (v === null || (lane.glide && ts.sent[lane.cc] === v)) continue;
+        ts.sent[lane.cc] = v;
+        this.sink.cc?.(ti, lane.cc, v, at + k * stepMs / subs);
+      }
+    }
   }
 }
